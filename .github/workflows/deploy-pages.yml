@@ -33,7 +33,7 @@ jobs:
       - name: Build for GitHub Pages
         run: npm run build
         env:
-          VITE_BASE_PATH: /bible-quiz-lookup/
+          VITE_BASE_PATH: /BQLookup/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

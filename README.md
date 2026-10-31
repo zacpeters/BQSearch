@@ -11,7 +11,7 @@ npm test          # automated tests
 npm run build     # type-check and production build
 ```
 
-The production GitHub Pages build uses `VITE_BASE_PATH=/bible-quiz-lookup/`. Other static hosts can use the default `/` base or provide a different `VITE_BASE_PATH` at build time. Vite and the PWA plugin rewrite the generated manifest, service worker, and cached asset URLs for that base path.
+The production GitHub Pages build uses `VITE_BASE_PATH=/BQLookup/`. Other static hosts can use the default `/` base or provide a different `VITE_BASE_PATH` at build time. Vite and the PWA plugin rewrite the generated manifest, service worker, and cached asset URLs for that base path.
 
 The app does not call an API during Scripture searches. The included Demonstration Pack is clearly labeled development-only and is not official tournament material. It exists only to exercise the interface and tests.
 
@@ -34,6 +34,6 @@ Future development: separately hosted authorized administration, pack import val
 
 ## GitHub Pages preparation
 
-The repository is prepared for a public repository named `bible-quiz-lookup`. Enable GitHub Pages in repository Settings → Pages → Source: GitHub Actions. The workflow in `.github/workflows/deploy-pages.yml` runs only for `main`, installs dependencies, runs tests, builds with the project base path, uploads `dist`, and deploys it. Its permissions are limited to read-only repository access plus the Pages deployment token permissions required by GitHub.
+The repository is prepared for a public repository named `BQLookup`. Enable GitHub Pages in repository Settings → Pages → Source: GitHub Actions. The workflow in `.github/workflows/deploy-pages.yml` runs only for `main`, installs dependencies, runs tests, builds with the project base path, uploads `dist`, and deploys it. Its permissions are limited to read-only repository access plus the Pages deployment token permissions required by GitHub.
 
 Updates are made by merging to `main`; the workflow rebuilds and replaces the Pages artifact. To roll back, revert the offending commit and merge the revert to `main`, or rerun a prior known-good commit through a controlled branch update. Publishing official material remains a maintainer-only repository operation; public users only download static published artifacts and retain them locally.
