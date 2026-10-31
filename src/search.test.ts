@@ -1,0 +1,4 @@
+import { describe, expect, it } from 'vitest';
+import { parseSearch, searchVerses } from './search';
+import { demoPack } from './data/demoPack';
+describe('search parsing', () => { it('parses references and legacy aliases', () => { expect(parseSearch('John 3:16').kind).toBe('reference'); expect(searchVerses(demoPack.verses, 'Jn 3:16')).toHaveLength(1); }); it('parses study numbers and ranges', () => { expect(parseSearch('1-4').kind).toBe('study-number'); expect(searchVerses(demoPack.verses, '1-4')).toHaveLength(4); }); it('supports exact phrases, words, and verse starts', () => { expect(parseSearch('"everlasting life"').kind).toBe('phrase'); expect(searchVerses(demoPack.verses, '"everlasting life"')).toHaveLength(1); expect(searchVerses(demoPack.verses, 'light')).toHaveLength(1); expect(parseSearch('start:For God').kind).toBe('verse-start'); expect(searchVerses(demoPack.verses, 'start:For God')).toHaveLength(1); }); });
