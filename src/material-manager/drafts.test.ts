@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { discardMaterialDraft, getMaterialDraft, saveMaterialDraft } from './drafts';
+import { discardMaterialDraft, getMaterialDraft, materialDraftBackupJson, parseMaterialDraftBackup, saveMaterialDraft } from './drafts';
 
 describe('Material Manager draft persistence', () => {
   beforeEach(async () => {
@@ -21,5 +21,12 @@ describe('Material Manager draft persistence', () => {
     await saveMaterialDraft({ input: 'Psalms 3:1', format: 'txt', sourceFiles: [], corpusText: '', corrections: {}, retrieved: {}, pack: { id: 'x', title: 'x', version: '1', seasonId: 'x', seasonName: 'x', year: 2027 }, importDivision: 'Beginner' });
     await discardMaterialDraft();
     expect(await getMaterialDraft()).toBeUndefined();
+  });
+
+  it('round-trips an explicitly unencrypted draft backup', () => {
+    const source = { input: 'Psalms 3:1', format: 'txt' as const, sourceFiles: [], corpusText: '', corrections: {}, retrieved: {}, pack: { id: 'p', title: 'Psalms', version: '1', seasonId: 's', seasonName: '2027', year: 2027 }, importDivision: 'Beginner' as const };
+    const restored = parseMaterialDraftBackup(JSON.parse(materialDraftBackupJson(source)));
+    expect(restored.input).toBe(source.input);
+    expect(materialDraftBackupJson(source)).toContain('bq-search-material-draft');
   });
 });

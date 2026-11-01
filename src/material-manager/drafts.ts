@@ -19,6 +19,10 @@ export interface MaterialDraftSnapshot {
   importDivision: Division;
 }
 
+export interface MaterialDraftBackup { format: 'bq-search-material-draft'; version: 1; draft: Omit<MaterialDraftSnapshot, 'id'>; }
+export function materialDraftBackupJson(snapshot: Omit<MaterialDraftSnapshot, 'id' | 'savedAt'>): string { return JSON.stringify({ format: 'bq-search-material-draft', version: 1, draft: { ...snapshot, savedAt: new Date().toISOString() } }, null, 2); }
+export function parseMaterialDraftBackup(value: unknown): Omit<MaterialDraftSnapshot, 'id'> { const parsed = value as Partial<MaterialDraftBackup> | null; if (!parsed || parsed.format !== 'bq-search-material-draft' || parsed.version !== 1 || !parsed.draft || typeof parsed.draft !== 'object') throw new Error('Invalid or unsupported draft backup.'); return parsed.draft as Omit<MaterialDraftSnapshot, 'id'>; }
+
 function openDraftDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);

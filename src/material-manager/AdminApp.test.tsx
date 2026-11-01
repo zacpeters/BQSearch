@@ -20,6 +20,23 @@ describe('Material Manager Stage 1 workflow UI', () => {
     expect(html).toContain('Continue →');
     expect(html).toContain('Export or install existing material');
     expect(html).toContain('Install exported pack locally');
+    expect(html).toContain('Open Material Manager help');
+    expect(html).toContain('Help');
+  });
+
+  it('provides the plain-language Help Center from the header', async () => {
+    const container = document.createElement('div'); document.body.appendChild(container); const root = createRoot(container);
+    await act(async () => { root.render(createElement(AdminApp)); });
+    const help = container.querySelector<HTMLButtonElement>('[aria-label="Open Material Manager help"]');
+    expect(help).toBeTruthy();
+    await act(async () => { help?.click(); });
+    expect(container.textContent).toContain('Material Manager help');
+    expect(container.textContent).toContain('Start a material year');
+    expect(container.textContent).toContain('Drafts and backups');
+    const close = container.querySelector<HTMLButtonElement>('[aria-label="Close help"]');
+    await act(async () => { close?.click(); });
+    expect(container.textContent).not.toContain('Material Manager help');
+    root.unmount(); container.remove();
   });
 
   it('allows direct navigation to Export before any material is prepared', async () => {

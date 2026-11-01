@@ -36,6 +36,15 @@ jobs:
         run: npm run build
         env:
           VITE_BASE_PATH: /BQSearch/
+      - name: Build Material Manager for GitHub Pages
+        run: npm run admin:build
+        env:
+          VITE_ADMIN_BASE_PATH: /BQSearch/admin/
+      - name: Add Material Manager to Pages artifact
+        run: |
+          mkdir -p dist/admin/assets
+          cp admin-dist/admin/index.html dist/admin/index.html
+          cp admin-dist/assets/* dist/admin/assets/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

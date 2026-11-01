@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   root: '.',
-  base: '/',
+  base: process.env.VITE_ADMIN_BASE_PATH ?? '/',
   server: { open: '/admin/' },
   plugins: [react()],
   build: {

@@ -229,7 +229,7 @@ Define a separate versioned presentation configuration contract. Keep administra
 
 ### Phase H1: Password-protected local settings
 
-Use Web Crypto authenticated encryption with random salt and nonce, password-derived keys, explicit backup/export, and password-change re-encryption. Document prominently that this is at-rest privacy in a browser, not server-side authorization. Do not use it to imply permission to publish or write to GitHub. This phase should follow a product decision about which settings are actually private.
+Historical proposal superseded by the public utility hosting decision: no password vault, authentication, encryption layer, or repository-write capability is planned for the Material Manager. Drafts and preferences remain browser-local, and releases are manually downloaded and added to the repository.
 
 ### Phase I1: Static hosting readiness
 

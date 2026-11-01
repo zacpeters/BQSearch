@@ -42,7 +42,7 @@ Updates are made by merging to `main`; the workflow rebuilds and replaces the Pa
 
 ## Phase 2 local Material Manager
 
-Run `npm run admin:dev` to open the separate local-only Material Manager. It is not linked from the public app and is not included in the GitHub Pages build. Load a TXT, CSV, or JSON reference list, then load a local KJV corpus and review the expanded references before export. `npm run admin:build` creates a separate `admin-dist/` artifact for local review only.
+Run `npm run admin:dev` to open the separate browser-based Material Manager at `http://localhost:5173/admin/`. It is not linked from the public app. Load a TXT, CSV, or JSON reference list, then load a local KJV file or retrieve selected passages and review the expanded references before export. `npm run admin:build` creates the `admin-dist/` artifact.
 
 The one-click provider is [bible-api.com](https://bible-api.com/), using its documented `translation=kjv` endpoint. The provider documents KJV availability, browser CORS, passage requests, and a limit of 15 requests per 30 seconds; it also says not to download an entire Bible. BQLookup therefore fetches only imported passages, with one request per same-book/chapter batch, a 2.1-second minimum interval, bounded concurrency, timeout, retry/backoff, cancellation, and visible failures. The provider identifies the translation as “King James Version” but does not independently specify a 1769 edition, so packs record that limitation in source metadata and still require human approval. The provider does not supply a blanket redistribution license for this workflow; the KJV source is treated as public domain only where applicable, and maintainers remain responsible for legal review before publication. See the [provider documentation](https://bible-api.com/) and [KJV source repository](https://github.com/bible-api/kjv).
 
@@ -50,8 +50,23 @@ The local corpus option remains the authoritative fallback for offline preparati
 
 Approved packs are exported to JSON with source metadata and a SHA-256 integrity checksum. Put reviewed packs under `public/packs/` through a maintainer-only repository change, preserve older versions, and update the public app only after review. The Pages workflow never generates or approves packs.
 
-The development server opens the admin tool at `http://localhost:5173/admin/` automatically with `npm run admin:dev`; `admin-dist/` is ignored and is never part of the public build.
+The development server opens the admin tool at `http://localhost:5173/admin/` automatically with `npm run admin:dev`; `admin-dist/` is ignored. The Pages workflow builds it with `VITE_ADMIN_BASE_PATH=/BQSearch/admin/`, then places its files under `dist/admin/`, so the deployed route is `https://zacpeters.github.io/BQSearch/admin/` without adding a public-app navigation link.
+
+The admin production build accepts `VITE_ADMIN_BASE_PATH` and is intended for separate static hosting. It requires no login, processes material in the browser, stores drafts and preferences locally, and never has GitHub write access. Draft backups are explicitly unencrypted. Approved releases must be downloaded and manually added to the repository by a maintainer.
 
 Plain-text imports use the selected Season and Division controls. The canonical current divisions are Beginner, Junior, Intermediate, and Experienced; legacy `Juniors` maps to `Junior` and legacy `Seniors` maps to `Experienced` during import. When a reference list omits study numbers, the importer assigns them in original input order starting at 1, independently for each division/import season. Explicit CSV/JSON study numbers are preserved, and range rows expand into consecutive study numbers.
 
 For local lookup testing, use the Material Manager's **Install exported pack locally** action. It verifies the exported checksum, stores the approved pack in the shared browser IndexedDB, selects its season/division, and makes it available to the public lookup in the same browser origin. Reload the lookup tab afterward. This is a local preview path only; it does not publish or deploy the pack.
+
+## Publishing a reviewed release
+
+The Material Manager only downloads files; it has no GitHub credentials and never publishes automatically. To update the public app, a maintainer should:
+
+1. Download the complete release ZIP and inspect its validation report.
+2. Copy the approved pack JSON into `public/packs/` and preserve prior versions.
+3. Copy division analysis files into `public/analysis/<pack-id>/`.
+4. Copy the release manifest and validation report into `public/releases/<pack-id>/`.
+5. Run `npm test`, `npm run validate:packs`, `npm run build`, and `VITE_BASE_PATH=/BQSearch/ npm run build`.
+6. Review the diff, commit through the normal repository process, and merge to `main`.
+
+The Pages workflow runs tests and pack validation, builds the public app at `/BQSearch/`, builds the Material Manager at `/BQSearch/admin/`, combines both into the Pages artifact, and deploys only from `main`. To roll back material, restore the previous approved files and merge that reviewed change; older pack versions remain available unless a maintainer removes them deliberately.
