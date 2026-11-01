@@ -9,13 +9,14 @@ import { AnnotatedVerse, defaultStudyMarkingPreferences, searchRangesForQuery, t
 import { loadAnalysisSidecar, type AnalysisLoadStatus } from './analysis-loader';
 import type { ScriptureAnnotation } from './analysis';
 import { bookChapters } from './material/books';
-import { getPacks, getSettings, savePack, saveSettings } from './storage';
+import { downloadPack, getPacks, getSettings, savePack, saveSettings } from './storage';
 import type { ContextMode, Division, ScripturePack, SearchResult, TournamentSettings } from './types';
 import { setWordComparisonState } from './wordComparison';
 import { useWordComparison } from './wordComparison';
 
 type View = 'search' | 'settings' | 'manager';
 export interface BeforeInstallPromptEvent extends Event { prompt: () => Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>; }
+const PUBLISHED_PACK_URL = `${import.meta.env.BASE_URL}packs/season-2027-v1-1.0.0.json`;
 export function isAppleTouchDevice(navigatorLike: { platform: string; maxTouchPoints: number; userAgent: string }) { return /iPad|iPhone|iPod/.test(navigatorLike.platform) || (navigatorLike.maxTouchPoints > 1 && /Macintosh/.test(navigatorLike.userAgent)); }
 export function installFallbackMessage(navigatorLike: { platform: string; maxTouchPoints: number; userAgent: string }) { return isAppleTouchDevice(navigatorLike) ? 'On iPhone or iPad, tap Share, then Add to Home Screen.' : 'Installation is not available here. Use your browser menu to install or add BQ Search to your home screen.'; }
 const defaults: TournamentSettings = { seasonId: demoPack.season.id, division: 'Intermediate', studyStart: 1, studyEnd: 999, installedPackId: demoPack.id, contextMode: 'off' };
@@ -61,8 +62,22 @@ export default function App() {
   useEffect(() => { if (ready && localStorage.getItem('bq-search-walkthrough-v1') !== 'dismissed') { const savedStep = Number(localStorage.getItem('bq-search-walkthrough-step-v1')); if (Number.isInteger(savedStep) && savedStep >= 0 && savedStep < 5) setWalkthroughStep(savedStep); setWalkthroughOpen(true); setWalkthroughPaused(false); } }, [ready]);
   useEffect(() => { try { localStorage.setItem('bq-search-study-markings-v1', JSON.stringify(studyMarkings)); } catch { /* local preferences are optional */ } }, [studyMarkings]);
   useEffect(() => {
-    Promise.all([getPacks(), getSettings()]).then(([stored, saved]) => {
-      setPacks(stored.length ? stored : [demoPack]); if (!stored.length) void savePack(demoPack); if (saved) setSettings(saved); setReady(true);
+    Promise.all([getPacks(), getSettings()]).then(async ([stored, saved]) => {
+      let available = stored;
+      let published = available.find(pack => pack.id === 'season-2027-v1');
+      if (!published) {
+        try { published = await downloadPack(PUBLISHED_PACK_URL); available = [...available, published]; } catch { /* Offline or unavailable: keep local packs and demo fallback. */ }
+      }
+      if (!available.length) { available = [demoPack]; void savePack(demoPack); }
+      setPacks(available);
+      if (saved) {
+        const savedPackStillAvailable = available.some(pack => pack.id === saved.installedPackId) && !(saved.installedPackId === demoPack.id && published);
+        setSettings(savedPackStillAvailable ? saved : { ...saved, installedPackId: published?.id ?? demoPack.id, seasonId: published?.season.id ?? demoPack.season.id });
+      } else if (published) {
+        const division = (published.verses.flatMap(verse => verse.divisions).find(value => ['Beginner', 'Junior', 'Intermediate', 'Experienced'].includes(value)) ?? 'Beginner') as Division;
+        setSettings({ ...defaults, installedPackId: published.id, seasonId: published.season.id, division });
+      }
+      setReady(true);
       if (!('serviceWorker' in navigator)) setOfflineReady(true); else void navigator.serviceWorker.ready.then(() => setOfflineReady(true));
     }).catch(() => { setPacks([demoPack]); setReady(true); setOfflineReady(false); });
   }, []);
