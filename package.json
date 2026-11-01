@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "admin:dev": "vite --config admin/vite.config.ts --open /admin/",
+    "validate:packs": "node scripts/validate-packs.mjs",
     "build": "tsc -b && vite build",
+    "admin:build": "tsc -b && vite build --config admin/vite.config.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

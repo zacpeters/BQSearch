@@ -1,0 +1,2712 @@
+{
+  "id": "season-2027-v1",
+  "schemaVersion": "1.0",
+  "season": {
+    "id": "season-2027",
+    "name": "2027",
+    "year": 2027,
+    "schemaVersion": "1.0"
+  },
+  "title": "2027 Beginner",
+  "version": "1.0.0",
+  "status": "approved",
+  "verses": [
+    {
+      "id": "psalms-3-1",
+      "book": "Psalms",
+      "chapter": 3,
+      "verse": 1,
+      "text": "LORD, how are they increased that trouble me! many\nare they that rise up against me.",
+      "studyNumber": 1,
+      "studyNumbers": {
+        "Beginner": 1
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-3-2",
+      "book": "Psalms",
+      "chapter": 3,
+      "verse": 2,
+      "text": "Many\nthere be which say of my soul,\nThere is no help for him in God. Selah.",
+      "studyNumber": 2,
+      "studyNumbers": {
+        "Beginner": 2
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-3-3",
+      "book": "Psalms",
+      "chapter": 3,
+      "verse": 3,
+      "text": "But thou, O LORD,\nart a shield for me; my glory, and the lifter up of mine head.",
+      "studyNumber": 3,
+      "studyNumbers": {
+        "Beginner": 3
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-3-4",
+      "book": "Psalms",
+      "chapter": 3,
+      "verse": 4,
+      "text": "I cried unto the LORD with my voice, and he heard me out of his holy hill. Selah.",
+      "studyNumber": 4,
+      "studyNumbers": {
+        "Beginner": 4
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-1",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 1,
+      "text": "Give ear to my words, O LORD, consider my meditation.",
+      "studyNumber": 5,
+      "studyNumbers": {
+        "Beginner": 5
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-2",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 2,
+      "text": "Hearken unto the voice of my cry, my King, and my God: for unto thee will I pray.",
+      "studyNumber": 6,
+      "studyNumbers": {
+        "Beginner": 6
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-3",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 3,
+      "text": "My voice shalt thou hear in the morning, O LORD; in the morning will I direct\nmy prayer unto thee, and will look up.",
+      "studyNumber": 7,
+      "studyNumbers": {
+        "Beginner": 7
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-4",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 4,
+      "text": "For thou\nart not a God that hath pleasure in wickedness: neither shall evil dwell with thee.",
+      "studyNumber": 8,
+      "studyNumbers": {
+        "Beginner": 8
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-5",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 5,
+      "text": "The foolish shall not stand in thy sight: thou hatest all workers of iniquity.",
+      "studyNumber": 9,
+      "studyNumbers": {
+        "Beginner": 9
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-6",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 6,
+      "text": "Thou shalt destroy them that speak leasing: the LORD will abhor the bloody and deceitful man.",
+      "studyNumber": 10,
+      "studyNumbers": {
+        "Beginner": 10
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-7",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 7,
+      "text": "But as for me, I will come\ninto thy house in the multitude of thy mercy:\nand in thy fear will I worship toward thy holy temple.",
+      "studyNumber": 11,
+      "studyNumbers": {
+        "Beginner": 11
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-8",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 8,
+      "text": "Lead me, O LORD, in thy righteousness because of mine enemies; make thy way straight before my face.",
+      "studyNumber": 12,
+      "studyNumbers": {
+        "Beginner": 12
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-9",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 9,
+      "text": "For\nthere is no faithfulness in their mouth; their inward part\nis very wickedness; their throat\nis an open sepulchre; they flatter with their tongue.",
+      "studyNumber": 13,
+      "studyNumbers": {
+        "Beginner": 13
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-10",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 10,
+      "text": "Destroy thou them, O God; let them fall by their own counsels; cast them out in the multitude of their transgressions; for they have rebelled against thee.",
+      "studyNumber": 14,
+      "studyNumbers": {
+        "Beginner": 14
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-11",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 11,
+      "text": "But let all those that put their trust in thee rejoice: let them ever shout for joy, because thou defendest them: let them also that love thy name be joyful in thee.",
+      "studyNumber": 15,
+      "studyNumbers": {
+        "Beginner": 15
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-5-12",
+      "book": "Psalms",
+      "chapter": 5,
+      "verse": 12,
+      "text": "For thou, LORD, wilt bless the righteous; with favour wilt thou compass him as\nwith a shield.",
+      "studyNumber": 16,
+      "studyNumbers": {
+        "Beginner": 16
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-1",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 1,
+      "text": "O LORD our Lord, how excellent\nis thy name in all the earth! who hast set thy glory above the heavens.",
+      "studyNumber": 17,
+      "studyNumbers": {
+        "Beginner": 17
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-2",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 2,
+      "text": "Out of the mouth of babes and sucklings hast thou ordained strength because of thine enemies, that thou mightest still the enemy and the avenger.",
+      "studyNumber": 18,
+      "studyNumbers": {
+        "Beginner": 18
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-3",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 3,
+      "text": "When I consider thy heavens, the work of thy fingers, the moon and the stars, which thou hast ordained;",
+      "studyNumber": 19,
+      "studyNumbers": {
+        "Beginner": 19
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-4",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 4,
+      "text": "What is man, that thou art mindful of him? and the son of man, that thou visitest him?",
+      "studyNumber": 20,
+      "studyNumbers": {
+        "Beginner": 20
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-5",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 5,
+      "text": "For thou hast made him a little lower than the angels, and hast crowned him with glory and honour.",
+      "studyNumber": 21,
+      "studyNumbers": {
+        "Beginner": 21
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-6",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 6,
+      "text": "Thou madest him to have dominion over the works of thy hands; thou hast put all\nthings under his feet:",
+      "studyNumber": 22,
+      "studyNumbers": {
+        "Beginner": 22
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-7",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 7,
+      "text": "All sheep and oxen, yea, and the beasts of the field;",
+      "studyNumber": 23,
+      "studyNumbers": {
+        "Beginner": 23
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-8",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 8,
+      "text": "The fowl of the air, and the fish of the sea,\nand whatsoever\n passeth through the paths of the seas.",
+      "studyNumber": 24,
+      "studyNumbers": {
+        "Beginner": 24
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-8-9",
+      "book": "Psalms",
+      "chapter": 8,
+      "verse": 9,
+      "text": "O LORD our Lord, how excellent is thy name in all the earth!",
+      "studyNumber": 25,
+      "studyNumbers": {
+        "Beginner": 25
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-1",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 1,
+      "text": "The fool hath said in his heart,\nThere is no God. They are corrupt, they have done abominable works,\nthere is none that doeth good.",
+      "studyNumber": 26,
+      "studyNumbers": {
+        "Beginner": 26
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-2",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 2,
+      "text": "The LORD looked down from heaven upon the children of men, to see if there were any that did understand,\nand seek God.",
+      "studyNumber": 27,
+      "studyNumbers": {
+        "Beginner": 27
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-3",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 3,
+      "text": "They are all gone aside, they are\nall together become filthy:\nthere is none that doeth good, no, not one.",
+      "studyNumber": 28,
+      "studyNumbers": {
+        "Beginner": 28
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-4",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 4,
+      "text": "Have all the workers of iniquity no knowledge? who eat up my people\nas they eat bread, and call not upon the LORD.",
+      "studyNumber": 29,
+      "studyNumbers": {
+        "Beginner": 29
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-5",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 5,
+      "text": "There were they in great fear: for God\nis in the generation of the righteous.",
+      "studyNumber": 30,
+      "studyNumbers": {
+        "Beginner": 30
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-6",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 6,
+      "text": "Ye have shamed the counsel of the poor, because the LORD\nis\n his refuge.",
+      "studyNumber": 31,
+      "studyNumbers": {
+        "Beginner": 31
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-14-7",
+      "book": "Psalms",
+      "chapter": 14,
+      "verse": 7,
+      "text": "Oh that the salvation of Israel\nwere come out of Zion! when the LORD bringeth back the captivity of his people, Jacob shall rejoice,\nand Israel shall be glad.",
+      "studyNumber": 32,
+      "studyNumbers": {
+        "Beginner": 32
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-30",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 30,
+      "text": "As for God, his way\nis perfect: the word of the LORD is tried: he\nis a buckler to all those that trust in him.",
+      "studyNumber": 33,
+      "studyNumbers": {
+        "Beginner": 33
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-31",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 31,
+      "text": "For who\nis God save the LORD? or who\nis a rock save our God?",
+      "studyNumber": 34,
+      "studyNumbers": {
+        "Beginner": 34
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-32",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 32,
+      "text": "It is God that girdeth me with strength, and maketh my way perfect.",
+      "studyNumber": 35,
+      "studyNumbers": {
+        "Beginner": 35
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-33",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 33,
+      "text": "He maketh my feet like hinds’\nfeet, and setteth me upon my high places.",
+      "studyNumber": 36,
+      "studyNumbers": {
+        "Beginner": 36
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-34",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 34,
+      "text": "He teacheth my hands to war, so that a bow of steel is broken by mine arms.",
+      "studyNumber": 37,
+      "studyNumbers": {
+        "Beginner": 37
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-35",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 35,
+      "text": "Thou hast also given me the shield of thy salvation: and thy right hand hath holden me up, and thy gentleness hath made me great.",
+      "studyNumber": 38,
+      "studyNumbers": {
+        "Beginner": 38
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-36",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 36,
+      "text": "Thou hast enlarged my steps under me, that my feet did not slip.",
+      "studyNumber": 39,
+      "studyNumbers": {
+        "Beginner": 39
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-37",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 37,
+      "text": "I have pursued mine enemies, and overtaken them: neither did I turn again till they were consumed.",
+      "studyNumber": 40,
+      "studyNumbers": {
+        "Beginner": 40
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-38",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 38,
+      "text": "I have wounded them that they were not able to rise: they are fallen under my feet.",
+      "studyNumber": 41,
+      "studyNumbers": {
+        "Beginner": 41
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-39",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 39,
+      "text": "For thou hast girded me with strength unto the battle: thou hast subdued under me those that rose up against me.",
+      "studyNumber": 42,
+      "studyNumbers": {
+        "Beginner": 42
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-40",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 40,
+      "text": "Thou hast also given me the necks of mine enemies; that I might destroy them that hate me.",
+      "studyNumber": 43,
+      "studyNumbers": {
+        "Beginner": 43
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-41",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 41,
+      "text": "They cried, but\nthere was none to save\nthem: even\n unto the LORD, but he answered them not.",
+      "studyNumber": 44,
+      "studyNumbers": {
+        "Beginner": 44
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-42",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 42,
+      "text": "Then did I beat them small as the dust before the wind: I did cast them out as the dirt in the streets.",
+      "studyNumber": 45,
+      "studyNumbers": {
+        "Beginner": 45
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-43",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 43,
+      "text": "Thou hast delivered me from the strivings of the people;\nand\n thou hast made me the head of the heathen: a people\nwhom\n I have not known shall serve me.",
+      "studyNumber": 46,
+      "studyNumbers": {
+        "Beginner": 46
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-44",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 44,
+      "text": "As soon as they hear of me, they shall obey me: the strangers shall submit themselves unto me.",
+      "studyNumber": 47,
+      "studyNumbers": {
+        "Beginner": 47
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-45",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 45,
+      "text": "The strangers shall fade away, and be afraid out of their close places.",
+      "studyNumber": 48,
+      "studyNumbers": {
+        "Beginner": 48
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-46",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 46,
+      "text": "The LORD liveth; and blessed\nbe my rock; and let the God of my salvation be exalted.",
+      "studyNumber": 49,
+      "studyNumbers": {
+        "Beginner": 49
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-47",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 47,
+      "text": "It is God that avengeth me, and subdueth the people under me.",
+      "studyNumber": 50,
+      "studyNumbers": {
+        "Beginner": 50
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-48",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 48,
+      "text": "He delivereth me from mine enemies: yea, thou liftest me up above those that rise up against me: thou hast delivered me from the violent man.",
+      "studyNumber": 51,
+      "studyNumbers": {
+        "Beginner": 51
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-49",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 49,
+      "text": "Therefore will I give thanks unto thee, O LORD, among the heathen, and sing praises unto thy name.",
+      "studyNumber": 52,
+      "studyNumbers": {
+        "Beginner": 52
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-18-50",
+      "book": "Psalms",
+      "chapter": 18,
+      "verse": 50,
+      "text": "Great deliverance giveth he to his king; and sheweth mercy to his anointed, to David, and to his seed for evermore.",
+      "studyNumber": 53,
+      "studyNumbers": {
+        "Beginner": 53
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-1",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 1,
+      "text": "The heavens declare the glory of God; and the firmament sheweth his handywork.",
+      "studyNumber": 54,
+      "studyNumbers": {
+        "Beginner": 54
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-2",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 2,
+      "text": "Day unto day uttereth speech, and night unto night sheweth knowledge.",
+      "studyNumber": 55,
+      "studyNumbers": {
+        "Beginner": 55
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-3",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 3,
+      "text": "There is no speech nor language,\nwhere their voice is not heard.",
+      "studyNumber": 56,
+      "studyNumbers": {
+        "Beginner": 56
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-4",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 4,
+      "text": "Their line is gone out through all the earth, and their words to the end of the world. In them hath he set a tabernacle for the sun,",
+      "studyNumber": 57,
+      "studyNumbers": {
+        "Beginner": 57
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-5",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 5,
+      "text": "Which\nis as a bridegroom coming out of his chamber,\nand\n rejoiceth as a strong man to run a race.",
+      "studyNumber": 58,
+      "studyNumbers": {
+        "Beginner": 58
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-6",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 6,
+      "text": "His going forth\nis from the end of the heaven, and his circuit unto the ends of it: and there is nothing hid from the heat thereof.",
+      "studyNumber": 59,
+      "studyNumbers": {
+        "Beginner": 59
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-7",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 7,
+      "text": "The law of the LORD\nis perfect, converting the soul: the testimony of the LORD\nis sure, making wise the simple.",
+      "studyNumber": 60,
+      "studyNumbers": {
+        "Beginner": 60
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-8",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 8,
+      "text": "The statutes of the LORD\nare right, rejoicing the heart: the commandment of the LORD\nis pure, enlightening the eyes.",
+      "studyNumber": 61,
+      "studyNumbers": {
+        "Beginner": 61
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-9",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 9,
+      "text": "The fear of the LORD\nis clean, enduring for ever: the judgments of the LORD\nare true\nand righteous altogether.",
+      "studyNumber": 62,
+      "studyNumbers": {
+        "Beginner": 62
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-10",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 10,
+      "text": "More to be desired\nare they than gold, yea, than much fine gold: sweeter also than honey and the honeycomb.",
+      "studyNumber": 63,
+      "studyNumbers": {
+        "Beginner": 63
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-11",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 11,
+      "text": "Moreover by them is thy servant warned:\nand in keeping of them\nthere is great reward.",
+      "studyNumber": 64,
+      "studyNumbers": {
+        "Beginner": 64
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-12",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 12,
+      "text": "Who can understand\nhis errors? cleanse thou me from secret\nfaults.",
+      "studyNumber": 65,
+      "studyNumbers": {
+        "Beginner": 65
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-13",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 13,
+      "text": "Keep back thy servant also from presumptuous\nsins; let them not have dominion over me: then shall I be upright, and I shall be innocent from the great transgression.",
+      "studyNumber": 66,
+      "studyNumbers": {
+        "Beginner": 66
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-19-14",
+      "book": "Psalms",
+      "chapter": 19,
+      "verse": 14,
+      "text": "Let the words of my mouth, and the meditation of my heart, be acceptable in thy sight, O LORD, my strength, and my redeemer.",
+      "studyNumber": 67,
+      "studyNumbers": {
+        "Beginner": 67
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-23-1",
+      "book": "Psalms",
+      "chapter": 23,
+      "verse": 1,
+      "text": "The LORD\nis my shepherd; I shall not want.",
+      "studyNumber": 68,
+      "studyNumbers": {
+        "Beginner": 68
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-23-2",
+      "book": "Psalms",
+      "chapter": 23,
+      "verse": 2,
+      "text": "He maketh me to lie down in green pastures: he leadeth me beside the still waters.",
+      "studyNumber": 69,
+      "studyNumbers": {
+        "Beginner": 69
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-23-3",
+      "book": "Psalms",
+      "chapter": 23,
+      "verse": 3,
+      "text": "He restoreth my soul: he leadeth me in the paths of righteousness for his name’s sake.",
+      "studyNumber": 70,
+      "studyNumbers": {
+        "Beginner": 70
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-23-4",
+      "book": "Psalms",
+      "chapter": 23,
+      "verse": 4,
+      "text": "Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou\nart with me; thy rod and thy staff they comfort me.",
+      "studyNumber": 71,
+      "studyNumbers": {
+        "Beginner": 71
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-23-5",
+      "book": "Psalms",
+      "chapter": 23,
+      "verse": 5,
+      "text": "Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over.",
+      "studyNumber": 72,
+      "studyNumbers": {
+        "Beginner": 72
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-23-6",
+      "book": "Psalms",
+      "chapter": 23,
+      "verse": 6,
+      "text": "Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the LORD for ever.",
+      "studyNumber": 73,
+      "studyNumbers": {
+        "Beginner": 73
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-1",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 1,
+      "text": "The earth\nis the LORD’S, and the fulness thereof; the world, and they that dwell therein.",
+      "studyNumber": 74,
+      "studyNumbers": {
+        "Beginner": 74
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-2",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 2,
+      "text": "For he hath founded it upon the seas, and established it upon the floods.",
+      "studyNumber": 75,
+      "studyNumbers": {
+        "Beginner": 75
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-3",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 3,
+      "text": "Who shall ascend into the hill of the LORD? or who shall stand in his holy place?",
+      "studyNumber": 76,
+      "studyNumbers": {
+        "Beginner": 76
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-4",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 4,
+      "text": "He that hath clean hands, and a pure heart; who hath not lifted up his soul unto vanity, nor sworn deceitfully.",
+      "studyNumber": 77,
+      "studyNumbers": {
+        "Beginner": 77
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-5",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 5,
+      "text": "He shall receive the blessing from the LORD, and righteousness from the God of his salvation.",
+      "studyNumber": 78,
+      "studyNumbers": {
+        "Beginner": 78
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-6",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 6,
+      "text": "This\nis the generation of them that seek him, that seek thy face, O Jacob. Selah.",
+      "studyNumber": 79,
+      "studyNumbers": {
+        "Beginner": 79
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-7",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 7,
+      "text": "Lift up your heads, O ye gates; and be ye lift up, ye everlasting doors; and the King of glory shall come in.",
+      "studyNumber": 80,
+      "studyNumbers": {
+        "Beginner": 80
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-8",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 8,
+      "text": "Who\nis this King of glory? The LORD strong and mighty, the LORD mighty in battle.",
+      "studyNumber": 81,
+      "studyNumbers": {
+        "Beginner": 81
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-9",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 9,
+      "text": "Lift up your heads, O ye gates; even lift\nthem up, ye everlasting doors; and the King of glory shall come in.",
+      "studyNumber": 82,
+      "studyNumbers": {
+        "Beginner": 82
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-24-10",
+      "book": "Psalms",
+      "chapter": 24,
+      "verse": 10,
+      "text": "Who is this King of glory? The LORD of hosts, he\nis the King of glory. Selah.",
+      "studyNumber": 83,
+      "studyNumbers": {
+        "Beginner": 83
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-1",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 1,
+      "text": "Unto thee, O LORD, do I lift up my soul.",
+      "studyNumber": 84,
+      "studyNumbers": {
+        "Beginner": 84
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-2",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 2,
+      "text": "O my God, I trust in thee: let me not be ashamed, let not mine enemies triumph over me.",
+      "studyNumber": 85,
+      "studyNumbers": {
+        "Beginner": 85
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-3",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 3,
+      "text": "Yea, let none that wait on thee be ashamed: let them be ashamed which transgress without cause.",
+      "studyNumber": 86,
+      "studyNumbers": {
+        "Beginner": 86
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-4",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 4,
+      "text": "Shew me thy ways, O LORD; teach me thy paths.",
+      "studyNumber": 87,
+      "studyNumbers": {
+        "Beginner": 87
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-5",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 5,
+      "text": "Lead me in thy truth, and teach me: for thou\nart the God of my salvation; on thee do I wait all the day.",
+      "studyNumber": 88,
+      "studyNumbers": {
+        "Beginner": 88
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-6",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 6,
+      "text": "Remember, O LORD, thy tender mercies and thy lovingkindnesses; for they\nhave been ever of old.",
+      "studyNumber": 89,
+      "studyNumbers": {
+        "Beginner": 89
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-7",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 7,
+      "text": "Remember not the sins of my youth, nor my transgressions: according to thy mercy remember thou me for thy goodness’ sake, O LORD.",
+      "studyNumber": 90,
+      "studyNumbers": {
+        "Beginner": 90
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-8",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 8,
+      "text": "Good and upright\nis the LORD: therefore will he teach sinners in the way.",
+      "studyNumber": 91,
+      "studyNumbers": {
+        "Beginner": 91
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-9",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 9,
+      "text": "The meek will he guide in judgment: and the meek will he teach his way.",
+      "studyNumber": 92,
+      "studyNumbers": {
+        "Beginner": 92
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-10",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 10,
+      "text": "All the paths of the LORD\nare mercy and truth unto such as keep his covenant and his testimonies.",
+      "studyNumber": 93,
+      "studyNumbers": {
+        "Beginner": 93
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-11",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 11,
+      "text": "For thy name’s sake, O LORD, pardon mine iniquity; for it\nis\n great.",
+      "studyNumber": 94,
+      "studyNumbers": {
+        "Beginner": 94
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-12",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 12,
+      "text": "What man\nis he that feareth the LORD? him shall he teach in the way\nthat he shall choose.",
+      "studyNumber": 95,
+      "studyNumbers": {
+        "Beginner": 95
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-13",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 13,
+      "text": "His soul shall dwell at ease; and his seed shall inherit the earth.",
+      "studyNumber": 96,
+      "studyNumbers": {
+        "Beginner": 96
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-14",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 14,
+      "text": "The secret of the LORD\nis with them that fear him; and he will shew them his covenant.",
+      "studyNumber": 97,
+      "studyNumbers": {
+        "Beginner": 97
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-15",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 15,
+      "text": "Mine eyes\nare ever toward the LORD; for he shall pluck my feet out of the net.",
+      "studyNumber": 98,
+      "studyNumbers": {
+        "Beginner": 98
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-16",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 16,
+      "text": "Turn thee unto me, and have mercy upon me; for I\nam desolate and afflicted.",
+      "studyNumber": 99,
+      "studyNumbers": {
+        "Beginner": 99
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-17",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 17,
+      "text": "The troubles of my heart are enlarged:\nO bring thou me out of my distresses.",
+      "studyNumber": 100,
+      "studyNumbers": {
+        "Beginner": 100
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-18",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 18,
+      "text": "Look upon mine affliction and my pain; and forgive all my sins.",
+      "studyNumber": 101,
+      "studyNumbers": {
+        "Beginner": 101
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-19",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 19,
+      "text": "Consider mine enemies; for they are many; and they hate me with cruel hatred.",
+      "studyNumber": 102,
+      "studyNumbers": {
+        "Beginner": 102
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-20",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 20,
+      "text": "O keep my soul, and deliver me: let me not be ashamed; for I put my trust in thee.",
+      "studyNumber": 103,
+      "studyNumbers": {
+        "Beginner": 103
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-21",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 21,
+      "text": "Let integrity and uprightness preserve me; for I wait on thee.",
+      "studyNumber": 104,
+      "studyNumbers": {
+        "Beginner": 104
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-25-22",
+      "book": "Psalms",
+      "chapter": 25,
+      "verse": 22,
+      "text": "Redeem Israel, O God, out of all his troubles.",
+      "studyNumber": 105,
+      "studyNumbers": {
+        "Beginner": 105
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-1",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 1,
+      "text": "The LORD\nis my light and my salvation; whom shall I fear? the LORD\nis the strength of my life; of whom shall I be afraid?",
+      "studyNumber": 106,
+      "studyNumbers": {
+        "Beginner": 106
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-2",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 2,
+      "text": "When the wicked,\neven mine enemies and my foes, came upon me to eat up my flesh, they stumbled and fell.",
+      "studyNumber": 107,
+      "studyNumbers": {
+        "Beginner": 107
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-3",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 3,
+      "text": "Though an host should encamp against me, my heart shall not fear: though war should rise against me, in this\nwill I\nbe confident.",
+      "studyNumber": 108,
+      "studyNumbers": {
+        "Beginner": 108
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-4",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 4,
+      "text": "One\nthing have I desired of the LORD, that will I seek after; that I may dwell in the house of the LORD all the days of my life, to behold the beauty of the LORD, and to enquire in his temple.",
+      "studyNumber": 109,
+      "studyNumbers": {
+        "Beginner": 109
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-5",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 5,
+      "text": "For in the time of trouble he shall hide me in his pavilion: in the secret of his tabernacle shall he hide me; he shall set me up upon a rock.",
+      "studyNumber": 110,
+      "studyNumbers": {
+        "Beginner": 110
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-6",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 6,
+      "text": "And now shall mine head be lifted up above mine enemies round about me: therefore will I offer in his tabernacle sacrifices of joy; I will sing, yea, I will sing praises unto the LORD.",
+      "studyNumber": 111,
+      "studyNumbers": {
+        "Beginner": 111
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-7",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 7,
+      "text": "Hear, O LORD,\nwhen I cry with my voice: have mercy also upon me, and answer me.",
+      "studyNumber": 112,
+      "studyNumbers": {
+        "Beginner": 112
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-8",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 8,
+      "text": "When thou saidst, Seek ye my face; my heart said unto thee, Thy face, LORD, will I seek.",
+      "studyNumber": 113,
+      "studyNumbers": {
+        "Beginner": 113
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-9",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 9,
+      "text": "Hide not thy face\nfar from me; put not thy servant away in anger: thou hast been my help; leave me not, neither forsake me, O God of my salvation.",
+      "studyNumber": 114,
+      "studyNumbers": {
+        "Beginner": 114
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-10",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 10,
+      "text": "When my father and my mother forsake me, then the LORD will take me up.",
+      "studyNumber": 115,
+      "studyNumbers": {
+        "Beginner": 115
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-11",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 11,
+      "text": "Teach me thy way, O LORD, and lead me in a plain path, because of mine enemies.",
+      "studyNumber": 116,
+      "studyNumbers": {
+        "Beginner": 116
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-12",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 12,
+      "text": "Deliver me not over unto the will of mine enemies: for false witnesses are risen up against me, and such as breathe out cruelty.",
+      "studyNumber": 117,
+      "studyNumbers": {
+        "Beginner": 117
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-13",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 13,
+      "text": "I had fainted, unless I had believed to see the goodness of the LORD in the land of the living.",
+      "studyNumber": 118,
+      "studyNumbers": {
+        "Beginner": 118
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-27-14",
+      "book": "Psalms",
+      "chapter": 27,
+      "verse": 14,
+      "text": "Wait on the LORD: be of good courage, and he shall strengthen thine heart: wait, I say, on the LORD.",
+      "studyNumber": 119,
+      "studyNumbers": {
+        "Beginner": 119
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-1",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 1,
+      "text": "Blessed\nis he whose transgression\nis forgiven,\nwhose sin\nis covered.",
+      "studyNumber": 120,
+      "studyNumbers": {
+        "Beginner": 120
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-2",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 2,
+      "text": "Blessed\nis the man unto whom the LORD imputeth not iniquity, and in whose spirit\nthere is no guile.",
+      "studyNumber": 121,
+      "studyNumbers": {
+        "Beginner": 121
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-3",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 3,
+      "text": "When I kept silence, my bones waxed old through my roaring all the day long.",
+      "studyNumber": 122,
+      "studyNumbers": {
+        "Beginner": 122
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-4",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 4,
+      "text": "For day and night thy hand was heavy upon me: my moisture is turned into the drought of summer. Selah.",
+      "studyNumber": 123,
+      "studyNumbers": {
+        "Beginner": 123
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-5",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 5,
+      "text": "I acknowledged my sin unto thee, and mine iniquity have I not hid. I said, I will confess my transgressions unto the LORD; and thou forgavest the iniquity of my sin. Selah.",
+      "studyNumber": 124,
+      "studyNumbers": {
+        "Beginner": 124
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-6",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 6,
+      "text": "For this shall every one that is godly pray unto thee in a time when thou mayest be found: surely in the floods of great waters they shall not come nigh unto him.",
+      "studyNumber": 125,
+      "studyNumbers": {
+        "Beginner": 125
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-7",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 7,
+      "text": "Thou\nart my hiding place; thou shalt preserve me from trouble; thou shalt compass me about with songs of deliverance. Selah.",
+      "studyNumber": 126,
+      "studyNumbers": {
+        "Beginner": 126
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-8",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 8,
+      "text": "I will instruct thee and teach thee in the way which thou shalt go: I will guide thee with mine eye.",
+      "studyNumber": 127,
+      "studyNumbers": {
+        "Beginner": 127
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-9",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 9,
+      "text": "Be ye not as the horse,\nor as the mule,\nwhich have no understanding: whose mouth must be held in with bit and bridle, lest they come near unto thee.",
+      "studyNumber": 128,
+      "studyNumbers": {
+        "Beginner": 128
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-10",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 10,
+      "text": "Many sorrows\nshall be to the wicked: but he that trusteth in the LORD, mercy shall compass him about.",
+      "studyNumber": 129,
+      "studyNumbers": {
+        "Beginner": 129
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-32-11",
+      "book": "Psalms",
+      "chapter": 32,
+      "verse": 11,
+      "text": "Be glad in the LORD, and rejoice, ye righteous: and shout for joy, all\nye that are upright in heart.",
+      "studyNumber": 130,
+      "studyNumbers": {
+        "Beginner": 130
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-1",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 1,
+      "text": "I will bless the LORD at all times: his praise\nshall continually\nbe in my mouth.",
+      "studyNumber": 131,
+      "studyNumbers": {
+        "Beginner": 131
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-2",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 2,
+      "text": "My soul shall make her boast in the LORD: the humble shall hear\nthereof, and be glad.",
+      "studyNumber": 132,
+      "studyNumbers": {
+        "Beginner": 132
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-3",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 3,
+      "text": "O magnify the LORD with me, and let us exalt his name together.",
+      "studyNumber": 133,
+      "studyNumbers": {
+        "Beginner": 133
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-4",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 4,
+      "text": "I sought the LORD, and he heard me, and delivered me from all my fears.",
+      "studyNumber": 134,
+      "studyNumbers": {
+        "Beginner": 134
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-5",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 5,
+      "text": "They looked unto him, and were lightened: and their faces were not ashamed.",
+      "studyNumber": 135,
+      "studyNumbers": {
+        "Beginner": 135
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-6",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 6,
+      "text": "This poor man cried, and the LORD heard\nhim, and saved him out of all his troubles.",
+      "studyNumber": 136,
+      "studyNumbers": {
+        "Beginner": 136
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-7",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 7,
+      "text": "The angel of the LORD encampeth round about them that fear him, and delivereth them.",
+      "studyNumber": 137,
+      "studyNumbers": {
+        "Beginner": 137
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-8",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 8,
+      "text": "O taste and see that the LORD\nis good: blessed\nis\n the man\nthat trusteth in him.",
+      "studyNumber": 138,
+      "studyNumbers": {
+        "Beginner": 138
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-9",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 9,
+      "text": "O fear the LORD, ye his saints: for\nthere is no want to them that fear him.",
+      "studyNumber": 139,
+      "studyNumbers": {
+        "Beginner": 139
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-10",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 10,
+      "text": "The young lions do lack, and suffer hunger: but they that seek the LORD shall not want any good\nthing.",
+      "studyNumber": 140,
+      "studyNumbers": {
+        "Beginner": 140
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-11",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 11,
+      "text": "Come, ye children, hearken unto me: I will teach you the fear of the LORD.",
+      "studyNumber": 141,
+      "studyNumbers": {
+        "Beginner": 141
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-12",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 12,
+      "text": "What man\nis he that desireth life,\nand loveth\nmany days, that he may see good?",
+      "studyNumber": 142,
+      "studyNumbers": {
+        "Beginner": 142
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-13",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 13,
+      "text": "Keep thy tongue from evil, and thy lips from speaking guile.",
+      "studyNumber": 143,
+      "studyNumbers": {
+        "Beginner": 143
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-14",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 14,
+      "text": "Depart from evil, and do good; seek peace, and pursue it.",
+      "studyNumber": 144,
+      "studyNumbers": {
+        "Beginner": 144
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-15",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 15,
+      "text": "The eyes of the LORD\nare upon the righteous, and his ears\nare open unto their cry.",
+      "studyNumber": 145,
+      "studyNumbers": {
+        "Beginner": 145
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-16",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 16,
+      "text": "The face of the LORD\nis against them that do evil, to cut off the remembrance of them from the earth.",
+      "studyNumber": 146,
+      "studyNumbers": {
+        "Beginner": 146
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-17",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 17,
+      "text": "The righteous cry, and the LORD heareth, and delivereth them out of all their troubles.",
+      "studyNumber": 147,
+      "studyNumbers": {
+        "Beginner": 147
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-18",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 18,
+      "text": "The LORD\nis nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit.",
+      "studyNumber": 148,
+      "studyNumbers": {
+        "Beginner": 148
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-19",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 19,
+      "text": "Many\nare the afflictions of the righteous: but the LORD delivereth him out of them all.",
+      "studyNumber": 149,
+      "studyNumbers": {
+        "Beginner": 149
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-20",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 20,
+      "text": "He keepeth all his bones: not one of them is broken.",
+      "studyNumber": 150,
+      "studyNumbers": {
+        "Beginner": 150
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-21",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 21,
+      "text": "Evil shall slay the wicked: and they that hate the righteous shall be desolate.",
+      "studyNumber": 151,
+      "studyNumbers": {
+        "Beginner": 151
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-34-22",
+      "book": "Psalms",
+      "chapter": 34,
+      "verse": 22,
+      "text": "The LORD redeemeth the soul of his servants: and none of them that trust in him shall be desolate.",
+      "studyNumber": 152,
+      "studyNumbers": {
+        "Beginner": 152
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-1",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 1,
+      "text": "Fret not thyself because of evildoers, neither be thou envious against the workers of iniquity.",
+      "studyNumber": 153,
+      "studyNumbers": {
+        "Beginner": 153
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-2",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 2,
+      "text": "For they shall soon be cut down like the grass, and wither as the green herb.",
+      "studyNumber": 154,
+      "studyNumbers": {
+        "Beginner": 154
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-3",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 3,
+      "text": "Trust in the LORD, and do good;\nso shalt thou dwell in the land, and verily thou shalt be fed.",
+      "studyNumber": 155,
+      "studyNumbers": {
+        "Beginner": 155
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-4",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 4,
+      "text": "Delight thyself also in the LORD; and he shall give thee the desires of thine heart.",
+      "studyNumber": 156,
+      "studyNumbers": {
+        "Beginner": 156
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-5",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 5,
+      "text": "Commit thy way unto the LORD; trust also in him; and he shall bring\nit to pass.",
+      "studyNumber": 157,
+      "studyNumbers": {
+        "Beginner": 157
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-6",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 6,
+      "text": "And he shall bring forth thy righteousness as the light, and thy judgment as the noonday.",
+      "studyNumber": 158,
+      "studyNumbers": {
+        "Beginner": 158
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-7",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 7,
+      "text": "Rest in the LORD, and wait patiently for him: fret not thyself because of him who prospereth in his way, because of the man who bringeth wicked devices to pass.",
+      "studyNumber": 159,
+      "studyNumbers": {
+        "Beginner": 159
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-8",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 8,
+      "text": "Cease from anger, and forsake wrath: fret not thyself in any wise to do evil.",
+      "studyNumber": 160,
+      "studyNumbers": {
+        "Beginner": 160
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-9",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 9,
+      "text": "For evildoers shall be cut off: but those that wait upon the LORD, they shall inherit the earth.",
+      "studyNumber": 161,
+      "studyNumbers": {
+        "Beginner": 161
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-10",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 10,
+      "text": "For yet a little while, and the wicked\nshall not\nbe:\n yea, thou shalt diligently consider his place, and it\nshall\n not\nbe.",
+      "studyNumber": 162,
+      "studyNumbers": {
+        "Beginner": 162
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-11",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 11,
+      "text": "But the meek shall inherit the earth; and shall delight themselves in the abundance of peace.",
+      "studyNumber": 163,
+      "studyNumbers": {
+        "Beginner": 163
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-12",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 12,
+      "text": "The wicked plotteth against the just, and gnasheth upon him with his teeth.",
+      "studyNumber": 164,
+      "studyNumbers": {
+        "Beginner": 164
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-13",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 13,
+      "text": "The Lord shall laugh at him: for he seeth that his day is coming.",
+      "studyNumber": 165,
+      "studyNumbers": {
+        "Beginner": 165
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-14",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 14,
+      "text": "The wicked have drawn out the sword, and have bent their bow, to cast down the poor and needy,\nand to slay such as be of upright conversation.",
+      "studyNumber": 166,
+      "studyNumbers": {
+        "Beginner": 166
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-15",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 15,
+      "text": "Their sword shall enter into their own heart, and their bows shall be broken.",
+      "studyNumber": 167,
+      "studyNumbers": {
+        "Beginner": 167
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-16",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 16,
+      "text": "A little that a righteous man hath\nis better than the riches of many wicked.",
+      "studyNumber": 168,
+      "studyNumbers": {
+        "Beginner": 168
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-17",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 17,
+      "text": "For the arms of the wicked shall be broken: but the LORD upholdeth the righteous.",
+      "studyNumber": 169,
+      "studyNumbers": {
+        "Beginner": 169
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-18",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 18,
+      "text": "The LORD knoweth the days of the upright: and their inheritance shall be for ever.",
+      "studyNumber": 170,
+      "studyNumbers": {
+        "Beginner": 170
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-19",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 19,
+      "text": "They shall not be ashamed in the evil time: and in the days of famine they shall be satisfied.",
+      "studyNumber": 171,
+      "studyNumbers": {
+        "Beginner": 171
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-20",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 20,
+      "text": "But the wicked shall perish, and the enemies of the LORD\nshall be\n as the fat of lambs: they shall consume; into smoke shall they consume away.",
+      "studyNumber": 172,
+      "studyNumbers": {
+        "Beginner": 172
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-21",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 21,
+      "text": "The wicked borroweth, and payeth not again: but the righteous sheweth mercy, and giveth.",
+      "studyNumber": 173,
+      "studyNumbers": {
+        "Beginner": 173
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-22",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 22,
+      "text": "For\nsuch as be blessed of him shall inherit the earth; and\nthey that be cursed of him shall be cut off.",
+      "studyNumber": 174,
+      "studyNumbers": {
+        "Beginner": 174
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-23",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 23,
+      "text": "The steps of a\ngood man are ordered by the LORD: and he delighteth in his way.",
+      "studyNumber": 175,
+      "studyNumbers": {
+        "Beginner": 175
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-24",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 24,
+      "text": "Though he fall, he shall not be utterly cast down: for the LORD upholdeth\nhim with his hand.",
+      "studyNumber": 176,
+      "studyNumbers": {
+        "Beginner": 176
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-25",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 25,
+      "text": "I have been young, and\nnow am old; yet have I not seen the righteous forsaken, nor his seed begging bread.",
+      "studyNumber": 177,
+      "studyNumbers": {
+        "Beginner": 177
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-26",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 26,
+      "text": "He is ever merciful, and lendeth; and his seed\nis\n blessed.",
+      "studyNumber": 178,
+      "studyNumbers": {
+        "Beginner": 178
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-27",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 27,
+      "text": "Depart from evil, and do good; and dwell for evermore.",
+      "studyNumber": 179,
+      "studyNumbers": {
+        "Beginner": 179
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-28",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 28,
+      "text": "For the LORD loveth judgment, and forsaketh not his saints; they are preserved for ever: but the seed of the wicked shall be cut off.",
+      "studyNumber": 180,
+      "studyNumbers": {
+        "Beginner": 180
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-29",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 29,
+      "text": "The righteous shall inherit the land, and dwell therein for ever.",
+      "studyNumber": 181,
+      "studyNumbers": {
+        "Beginner": 181
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-30",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 30,
+      "text": "The mouth of the righteous speaketh wisdom, and his tongue talketh of judgment.",
+      "studyNumber": 182,
+      "studyNumbers": {
+        "Beginner": 182
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-31",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 31,
+      "text": "The law of his God\nis in his heart; none of his steps shall slide.",
+      "studyNumber": 183,
+      "studyNumbers": {
+        "Beginner": 183
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-32",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 32,
+      "text": "The wicked watcheth the righteous, and seeketh to slay him.",
+      "studyNumber": 184,
+      "studyNumbers": {
+        "Beginner": 184
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-33",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 33,
+      "text": "The LORD will not leave him in his hand, nor condemn him when he is judged.",
+      "studyNumber": 185,
+      "studyNumbers": {
+        "Beginner": 185
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-34",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 34,
+      "text": "Wait on the LORD, and keep his way, and he shall exalt thee to inherit the land: when the wicked are cut off, thou shalt see\nit.",
+      "studyNumber": 186,
+      "studyNumbers": {
+        "Beginner": 186
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-35",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 35,
+      "text": "I have seen the wicked in great power, and spreading himself like a green bay tree.",
+      "studyNumber": 187,
+      "studyNumbers": {
+        "Beginner": 187
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-36",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 36,
+      "text": "Yet he passed away, and, lo, he\nwas not: yea, I sought him, but he could not be found.",
+      "studyNumber": 188,
+      "studyNumbers": {
+        "Beginner": 188
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-37",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 37,
+      "text": "Mark the perfect\nman, and behold the upright: for the end of\nthat man\nis peace.",
+      "studyNumber": 189,
+      "studyNumbers": {
+        "Beginner": 189
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-38",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 38,
+      "text": "But the transgressors shall be destroyed together: the end of the wicked shall be cut off.",
+      "studyNumber": 190,
+      "studyNumbers": {
+        "Beginner": 190
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-39",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 39,
+      "text": "But the salvation of the righteous\nis of the LORD:\nhe is\n their strength in the time of trouble.",
+      "studyNumber": 191,
+      "studyNumbers": {
+        "Beginner": 191
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    },
+    {
+      "id": "psalms-37-40",
+      "book": "Psalms",
+      "chapter": 37,
+      "verse": 40,
+      "text": "And the LORD shall help them and deliver them: he shall deliver them from the wicked, and save them, because they trust in him.",
+      "studyNumber": 192,
+      "studyNumbers": {
+        "Beginner": 192
+      },
+      "divisions": [
+        "Beginner"
+      ]
+    }
+  ],
+  "source": {
+    "name": "bible-api.com KJV endpoint",
+    "url": "https://bible-api.com/",
+    "license": "King James Version as identified by bible-api.com; provider does not independently specify a 1769 edition. Selected verse text only; API terms prohibit downloading an entire Bible. Maintainer review required before redistribution.",
+    "retrievedAt": "2026-11-01T00:06:50.221Z",
+    "corpusChecksum": "5465b825",
+    "notes": "Prepared locally; API retrieval is selected-verse only and maintainer approval is required."
+  },
+  "integrityChecksum": "1fa5a9af9588b4cefd0a3b4ca41f85ab05d97fff701021bed701904f7fdb96b4"
+}

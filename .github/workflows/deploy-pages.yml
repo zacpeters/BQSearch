@@ -30,10 +30,12 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm test
+      - name: Validate submitted Scripture packs
+        run: npm run validate:packs
       - name: Build for GitHub Pages
         run: npm run build
         env:
-          VITE_BASE_PATH: /BQLookup/
+          VITE_BASE_PATH: /BQSearch/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
