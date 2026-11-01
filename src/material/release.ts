@@ -1,0 +1,38 @@
+import { validateAnalysisSidecar } from '../analysis-loader';
+import { analysisJson, type AnalysisReport } from '../analysis';
+import type { Division, ScripturePack } from '../types';
+import { packJson, sha256Hex } from './pack';
+
+export interface ReleaseFile { path: string; content: string; sha256: string; bytes: number; }
+export interface ReleaseManifest { manifestVersion: '1.0'; pack: { id: string; version: string; schemaVersion: string; checksum: string; path: string }; analysisSchemaVersion: '1.1'; divisions: { division: Division; verseCount: number; path: string; checksum: string }[]; sourceFiles: string[]; validationReportPath: 'validation-report.txt'; files: { path: string; sha256: string; bytes: number }[]; }
+export interface ReleaseValidation { valid: boolean; errors: string[]; warnings: string[]; manifest?: ReleaseManifest; files?: ReleaseFile[]; report: string; }
+
+const bytesOf = (value: string) => new TextEncoder().encode(value);
+
+export function includedDivisions(pack: ScripturePack): Division[] { return (['Beginner', 'Junior', 'Intermediate', 'Experienced'] as Division[]).filter(division => pack.verses.some(verse => verse.divisions.includes(division))); }
+export function suggestedReleaseFilename(pack: { title: string; season: { year: number } }, divisions: Division[] = []) { const title = pack.title.replace(/\b(beginner|junior|intermediate|experienced|juniors|seniors)\b/gi, '').replace(/\b\d{4}\b/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'Scripture'; const scope = divisions.length > 1 ? 'Complete' : (divisions[0] ?? 'Material'); return `${title}-${pack.season.year}-${scope}.zip`; }
+
+function crc32(data: Uint8Array) { let crc = 0xffffffff; for (const byte of data) { crc ^= byte; for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0); } return (crc ^ 0xffffffff) >>> 0; }
+function u16(value: number) { return [value & 255, (value >>> 8) & 255]; }
+function u32(value: number) { return [value & 255, (value >>> 8) & 255, (value >>> 16) & 255, (value >>> 24) & 255]; }
+
+/** Creates a deterministic ZIP using stored entries and a fixed DOS timestamp. */
+export function createDeterministicZip(files: { path: string; content: string }[]): Uint8Array {
+  const entries = [...files].sort((a, b) => a.path.localeCompare(b.path)).map(file => { const data = bytesOf(file.content); return { name: bytesOf(file.path), data, crc: crc32(data) }; });
+  const local: Uint8Array[] = []; const central: Uint8Array[] = []; let offset = 0;
+  const concat = (chunks: Uint8Array[]) => { const size = chunks.reduce((total, chunk) => total + chunk.length, 0); const output = new Uint8Array(size); let position = 0; for (const chunk of chunks) { output.set(chunk, position); position += chunk.length; } return output; };
+  for (const entry of entries) { const header = Uint8Array.from([0x50, 0x4b, 0x03, 0x04, ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(entry.crc), ...u32(entry.data.length), ...u32(entry.data.length), ...u16(entry.name.length), ...u16(0)]); const localEntry = concat([header, entry.name, entry.data]); local.push(localEntry); const centralHeader = Uint8Array.from([0x50, 0x4b, 0x01, 0x02, ...u16(20), ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(entry.crc), ...u32(entry.data.length), ...u32(entry.data.length), ...u16(entry.name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(offset)]); central.push(concat([centralHeader, entry.name])); offset += localEntry.length; }
+  const localBytes = concat(local); const centralBytes = concat(central); const end = Uint8Array.from([0x50, 0x4b, 0x05, 0x06, ...u16(0), ...u16(0), ...u16(entries.length), ...u16(entries.length), ...u32(centralBytes.length), ...u32(localBytes.length), ...u16(0)]); return concat([localBytes, centralBytes, end]);
+}
+
+export async function validateReleaseBundle(pack: ScripturePack, reports: Partial<Record<Division, AnalysisReport>>, sourceFiles: string[] = [], requiredDivisions = includedDivisions(pack)): Promise<ReleaseValidation> {
+  const errors: string[] = []; const warnings: string[] = []; const files: ReleaseFile[] = []; const packPath = `packs/${pack.id}-${pack.version}.json`; const packContent = packJson(pack); files.push({ path: packPath, content: packContent, sha256: await sha256Hex(packContent), bytes: bytesOf(packContent).length });
+  if (!pack.integrityChecksum) errors.push('Pack is missing its integrity checksum.');
+  const packDivisions = includedDivisions(pack); for (const division of requiredDivisions) { if (!packDivisions.includes(division)) errors.push(`Required division ${division} is not present in the pack.`); const report = reports[division]; if (!report) { errors.push(`Missing analysis report for ${division}.`); continue; } const checked = validateAnalysisSidecar(report, pack, division); if (!checked.valid) errors.push(`${division} analysis is invalid: ${checked.message}`); if (report.errors.length) errors.push(`${division} analysis contains ${report.errors.length} validation error${report.errors.length === 1 ? '' : 's'}.`); const path = `analysis/${pack.id}/${division}.json`; const content = analysisJson(report); files.push({ path, content, sha256: await sha256Hex(content), bytes: bytesOf(content).length }); if (reports[division] && files.some(file => file.path === path && file.content !== content)) errors.push(`Duplicate analysis output for ${division}.`); if (report.unresolved.length) warnings.push(`${division}: ${report.unresolved.length} unresolved unique boundary cases.`); }
+  const sourceList = [...new Set(sourceFiles)].sort(); const divisions = requiredDivisions.map(division => { const file = files.find(item => item.path === `analysis/${pack.id}/${division}.json`); return { division, verseCount: pack.verses.filter(verse => verse.divisions.includes(division)).length, path: file?.path ?? `analysis/${pack.id}/${division}.json`, checksum: file?.sha256 ?? '' }; });
+  const manifestBase = { manifestVersion: '1.0' as const, pack: { id: pack.id, version: pack.version, schemaVersion: pack.schemaVersion, checksum: pack.integrityChecksum ?? '', path: packPath }, analysisSchemaVersion: '1.1' as const, divisions, sourceFiles: sourceList, validationReportPath: 'validation-report.txt' as const, files: files.map(file => ({ path: file.path, sha256: file.sha256, bytes: file.bytes })) }; const manifestContent = JSON.stringify(manifestBase, null, 2); files.push({ path: 'manifest.json', content: manifestContent, sha256: await sha256Hex(manifestContent), bytes: bytesOf(manifestContent).length });
+  const report = `BQ Search release validation\nPack: ${pack.id} ${pack.version}\nPack checksum: ${pack.integrityChecksum ?? 'missing'}\nDivisions: ${requiredDivisions.join(', ') || 'none'}\n\nFiles:\n${files.map(file => `- ${file.path} (${file.bytes} bytes, SHA-256 ${file.sha256})`).join('\n')}\n\nWarnings:\n${warnings.length ? warnings.map(item => `- ${item}`).join('\n') : '- None'}\n\nErrors:\n${errors.length ? errors.map(item => `- ${item}`).join('\n') : '- None'}\n`;
+  const reportFile = { path: 'validation-report.txt', content: report, sha256: await sha256Hex(report), bytes: bytesOf(report).length }; files.push(reportFile); const manifest: ReleaseManifest = manifestBase; return { valid: errors.length === 0, errors, warnings, manifest, files, report };
+}
+
+export async function buildReleaseZip(validation: ReleaseValidation): Promise<Uint8Array> { if (!validation.valid || !validation.files) throw new Error(`Release validation failed: ${validation.errors.join(' ')}`); return createDeterministicZip(validation.files); }

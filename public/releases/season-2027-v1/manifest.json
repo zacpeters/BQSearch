@@ -1,0 +1,71 @@
+{
+  "manifestVersion": "1.0",
+  "pack": {
+    "id": "season-2027-v1",
+    "version": "1.0.0",
+    "schemaVersion": "1.0",
+    "checksum": "bf3902a53d25505a9b7f02734c52c1e6068718fa6e35bfda2bdf17f5c5ba0aea",
+    "path": "packs/season-2027-v1-1.0.0.json"
+  },
+  "analysisSchemaVersion": "1.1",
+  "divisions": [
+    {
+      "division": "Beginner",
+      "verseCount": 192,
+      "path": "analysis/season-2027-v1/Beginner.json",
+      "checksum": "f9533303d8d780077d127248b0732d2ae437b732424f8d78e1cae379e18f749c"
+    },
+    {
+      "division": "Junior",
+      "verseCount": 288,
+      "path": "analysis/season-2027-v1/Junior.json",
+      "checksum": "331ec96bf35fb7b8e94a7a102fb53c65858f84a9892f1be6c748b75acb8ebd16"
+    },
+    {
+      "division": "Intermediate",
+      "verseCount": 429,
+      "path": "analysis/season-2027-v1/Intermediate.json",
+      "checksum": "035320e49f6e864a1fd188fd79071bab0d68fe86c7a8b65928400991bb555124"
+    },
+    {
+      "division": "Experienced",
+      "verseCount": 530,
+      "path": "analysis/season-2027-v1/Experienced.json",
+      "checksum": "2a7224adab05d8b6e96a6f03a7f93c4f487550ae5a49b801f67fa6e2dcfd0442"
+    }
+  ],
+  "sourceFiles": [
+    "2027-Beginner-References.txt",
+    "2027-Experienced-References.txt",
+    "2027-Intermediate-References.txt",
+    "2027-Junior-References.txt"
+  ],
+  "validationReportPath": "validation-report.txt",
+  "files": [
+    {
+      "path": "packs/season-2027-v1-1.0.0.json",
+      "sha256": "76807fbce5103245a89e36192a256e6849885344eeca9927087b95b0b88a9a17",
+      "bytes": 231499
+    },
+    {
+      "path": "analysis/season-2027-v1/Beginner.json",
+      "sha256": "f9533303d8d780077d127248b0732d2ae437b732424f8d78e1cae379e18f749c",
+      "bytes": 583704
+    },
+    {
+      "path": "analysis/season-2027-v1/Junior.json",
+      "sha256": "331ec96bf35fb7b8e94a7a102fb53c65858f84a9892f1be6c748b75acb8ebd16",
+      "bytes": 759878
+    },
+    {
+      "path": "analysis/season-2027-v1/Intermediate.json",
+      "sha256": "035320e49f6e864a1fd188fd79071bab0d68fe86c7a8b65928400991bb555124",
+      "bytes": 1078321
+    },
+    {
+      "path": "analysis/season-2027-v1/Experienced.json",
+      "sha256": "2a7224adab05d8b6e96a6f03a7f93c4f487550ae5a49b801f67fa6e2dcfd0442",
+      "bytes": 1255482
+    }
+  ]
+}

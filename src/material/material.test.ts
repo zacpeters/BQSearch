@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseImportText, parseReference, expandReference, reviewReferences } from './importer';
+import { parseImportFiles, parseImportText, parseReference, expandReference, reviewReferences, suggestDivisionFromFilename } from './importer';
 import { fetchKJVCorpus, parseKJVText } from './kjv';
 import { generatePack, validateImportedReferences, verifyPackIntegrity } from './pack';
 
@@ -28,5 +28,31 @@ describe('material import and validation', () => {
   });
   it('blocks invalid pack generation and creates a checksummed compatible pack', async () => {
     const parsed = parseImportText('John 3:16', 'txt'); const review = reviewReferences(parsed.specs.map(spec => ({ ...spec, studyNumbers: { Seniors: 1 } })), corpus); expect(validateImportedReferences(review.references, review.issues).valid).toBe(true); const pack = await generatePack({ id: 'season-test-v1', title: 'Test Season', version: '1.0.0', seasonId: 'test', seasonName: 'Test', year: 2026, references: review.references, source: { name: 'test corpus', license: 'test', retrievedAt: new Date().toISOString() } }); expect(pack.verses[0].book).toBe('John'); expect(pack.integrityChecksum).toMatch(/^[a-f0-9]{64}$/); expect(await verifyPackIntegrity(pack)).toBe(true);
+  });
+  it('suggests canonical divisions from filenames and preserves source provenance', () => {
+    expect(suggestDivisionFromFilename('2027-Beginner.txt')).toBe('Beginner');
+    expect(suggestDivisionFromFilename('psalms-jr.txt')).toBe('Junior');
+    const parsed = parseImportFiles([{ fileName: '2027-Beginner.txt', division: 'Beginner', text: 'John 3:16\nBad reference' }]);
+    expect(parsed.specs[0].sourceFileName).toBe('2027-Beginner.txt');
+    expect(parsed.issues[0].sourceFileName).toBe('2027-Beginner.txt');
+  });
+  it('prevents duplicate division assignments across files', () => {
+    const parsed = parseImportFiles([{ fileName: 'beginner-a.txt', division: 'Beginner', text: 'John 3:16' }, { fileName: 'beginner-b.txt', division: 'Beginner', text: 'John 3:17' }]);
+    expect(parsed.issues.some(issue => issue.message.includes('assigned to both'))).toBe(true);
+  });
+  it('keeps overlapping references as review duplicates while merging shared text in one pack', async () => {
+    const parsed = parseImportFiles([{ fileName: 'beginner.txt', division: 'Beginner', text: 'John 3:16' }, { fileName: 'junior.txt', division: 'Junior', text: 'John 3:16' }]);
+    const review = reviewReferences(parsed.specs, corpus);
+    expect(review.issues).toHaveLength(0);
+    const pack = await generatePack({ id: 'multi', title: 'Multi', version: '1.0.0', seasonId: 'multi', seasonName: 'Multi', year: 2027, references: review.references, source: { name: 'test', license: 'test', retrievedAt: 'static' } });
+    expect(pack.verses).toHaveLength(1);
+    expect(pack.verses[0].divisions).toEqual(['Beginner', 'Junior']);
+    expect(pack.verses[0].studyNumbers).toEqual({ Beginner: 1, Junior: 1 });
+  });
+  it('reports unassigned files without processing them as validated material', () => {
+    const parsed = parseImportFiles([{ fileName: 'psalms.txt', text: 'John 3:16' }]);
+    expect(parsed.specs).toHaveLength(0);
+    expect(parsed.issues[0].kind).toBe('input-error');
+    expect(parsed.issues[0].sourceFileName).toBe('psalms.txt');
   });
 });

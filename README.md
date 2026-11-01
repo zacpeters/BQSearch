@@ -15,6 +15,8 @@ The production GitHub Pages build uses `VITE_BASE_PATH=/BQSearch/` and is hosted
 
 The app does not call an API during Scripture searches. The included Demonstration Pack is clearly labeled development-only and is not official tournament material. It exists only to exercise the interface and tests. Open **Help** in BQ Search for the supported search syntax and offline workflow.
 
+Use the install icon in the header when the browser offers installation. On iPhone and iPad, use Share → Add to Home Screen. Installation is optional: after the app shell, Scripture pack, and compatible analysis sidecar have loaded, the locally stored material remains available without a connection.
+
 ## Phase 1 architecture
 
 - `src/types.ts` contains versioned schemas for seasons, divisions, verses, study sequence numbers, packs, settings, and search results.

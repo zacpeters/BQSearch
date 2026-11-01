@@ -35,7 +35,7 @@ describe('division-specific study projections', () => {
     expect(getDivisionStudyRange(verses, 'Junior')).toEqual({ min: 4, max: 5 });
     expect(resolveStudyRange(junior, 1, 999)).toEqual({ start: 4, end: 5, all: true });
     expect(resolveStudyRange(junior, 999, 1000)).toEqual({ start: 5, end: 5, all: false });
-    expect(searchVerses(junior, '4')[0].verse.id).toBe('john-3-16');
+    expect(searchVerses(junior, '#4')[0].verse.id).toBe('john-3-16');
     expect(junior.filter(verse => verse.studyNumber >= 5 && verse.studyNumber <= 5).map(verse => verse.id)).toEqual(['psalms-3-1']);
   });
 

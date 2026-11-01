@@ -1,0 +1,21 @@
+BQ Search release validation
+Pack: season-2027-v1 1.0.0
+Pack checksum: bf3902a53d25505a9b7f02734c52c1e6068718fa6e35bfda2bdf17f5c5ba0aea
+Divisions: Beginner, Junior, Intermediate, Experienced
+
+Files:
+- packs/season-2027-v1-1.0.0.json (231499 bytes, SHA-256 76807fbce5103245a89e36192a256e6849885344eeca9927087b95b0b88a9a17)
+- analysis/season-2027-v1/Beginner.json (583704 bytes, SHA-256 f9533303d8d780077d127248b0732d2ae437b732424f8d78e1cae379e18f749c)
+- analysis/season-2027-v1/Junior.json (759878 bytes, SHA-256 331ec96bf35fb7b8e94a7a102fb53c65858f84a9892f1be6c748b75acb8ebd16)
+- analysis/season-2027-v1/Intermediate.json (1078321 bytes, SHA-256 035320e49f6e864a1fd188fd79071bab0d68fe86c7a8b65928400991bb555124)
+- analysis/season-2027-v1/Experienced.json (1255482 bytes, SHA-256 2a7224adab05d8b6e96a6f03a7f93c4f487550ae5a49b801f67fa6e2dcfd0442)
+- manifest.json (2265 bytes, SHA-256 7feb7d44c47abb3290c549a659ccb4d131151ce91485f2875a68e8e0295e2d6f)
+
+Warnings:
+- Beginner: 1 unresolved unique boundary cases.
+- Junior: 1 unresolved unique boundary cases.
+- Intermediate: 5 unresolved unique boundary cases.
+- Experienced: 6 unresolved unique boundary cases.
+
+Errors:
+- None
