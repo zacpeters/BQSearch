@@ -30,9 +30,13 @@ Use the install icon in the header when the browser offers installation. On iPho
 
 Implemented: responsive touch-first search, keyboard input, three views, local filtering by division and study range, IndexedDB persistence, PWA configuration, local search, and automated tests.
 
+The first BQ Tournament web vertical slice is now also implemented in this application. Open **Live Scorer** to create or resume an offline score sheet with Red/Yellow teams, three quizzers per side, question navigation, correct/error/foul/team-foul/timeout/no-response/contest events, live scores, quizzer eligibility, quiz-out bonuses, lock projection, recent-event undo, IndexedDB persistence, and an integrated Scripture lookup panel powered by the active BQLookup pack.
+
 Placeholder: Public lookup has no administrative controls. Local administration is a separate tool under `admin/`.
 
 Future development: official season content pipeline, richer reference ranges, and production accessibility/device QA. Public lookup has no authentication or publishing actions.
+
+Next tournament work: automatic save after every scoring event, explicit new-game/session management, full interruption/reread state transitions, tournament matrices, practice mode, statistics, multi-user display synchronization, and approved material/question linking.
 
 ## GitHub Pages preparation
 
