@@ -23,7 +23,7 @@ Use the install icon in the header when the browser offers installation. On iPho
 - `src/search.ts` is a pure, network-free search engine. It supports references, legacy book aliases, words, exact phrases, verse starts, and study-number/range searches. Study sequence numbers are separate from chapter and verse fields.
 - `src/storage.ts` uses IndexedDB for installed packs and tournament settings.
 - `public/packs/*.json` contains versioned static pack artifacts. `downloadPack()` fetches a base-aware pack URL, validates its top-level shape, and retains it in IndexedDB.
-- `src/data/demoPack.ts` is the development fixture; importing/publishing official packs is intentionally outside this public app.
+- The approved 2027 material is bundled as the default and offline fallback; previously installed demo packs are excluded from available material.
 - `vite-plugin-pwa` creates the service worker and offline application shell.
 
 ## Phase 1 status

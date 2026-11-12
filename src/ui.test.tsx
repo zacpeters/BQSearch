@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { ExactWordStats, Help, Settings, StudyMarkings, Walkthrough, installFallbackMessage } from './App';
 import { defaultStudyMarkingPreferences } from './AnnotatedVerse';
-import { demoPack } from './data/demoPack';
+import bundledPack from '../public/packs/season-2027-v1-1.0.0.json';
+import type { ScripturePack } from './types';
+const fixturePack = bundledPack as ScripturePack;
 
 describe('BQ Search navigation and help surfaces', () => {
   it('renders an explicit Back to Lookup action in Settings', () => {
-    const html = renderToStaticMarkup(<Settings settings={{ seasonId: demoPack.season.id, division: 'Seniors', studyStart: 1, studyEnd: 6, installedPackId: demoPack.id }} packs={[demoPack]} studyMin={1} studyMax={6} studyStart={1} studyEnd={6} contextMode="off" onBack={() => undefined} onReset={() => undefined} onChange={() => undefined} />);
+    const html = renderToStaticMarkup(<Settings settings={{ seasonId: fixturePack.season.id, division: 'Seniors', studyStart: 1, studyEnd: 6, installedPackId: fixturePack.id }} packs={[fixturePack]} studyMin={1} studyMax={6} studyStart={1} studyEnd={6} contextMode="off" onBack={() => undefined} onReset={() => undefined} onChange={() => undefined} />);
     expect(html).toContain('Back to Lookup');
     expect(html).toContain('max="6"');
   });
@@ -58,7 +60,7 @@ describe('BQ Search navigation and help surfaces', () => {
     expect(walkthrough).toContain('I’ll come back to this');
     expect(walkthrough).toContain('Show me');
     expect(walkthrough).toContain('Next');
-    expect(walkthrough).toContain('John 3:16');
+    expect(walkthrough).toContain('Psalms 3:1');
     expect(renderToStaticMarkup(<Walkthrough step={1} onStep={() => undefined} onDismiss={() => undefined} />)).toContain('AND must be uppercase');
     expect(renderToStaticMarkup(<Walkthrough step={2} onStep={() => undefined} onDismiss={() => undefined} />)).toContain('Peek at context');
     expect(renderToStaticMarkup(<Walkthrough step={3} onStep={() => undefined} onDismiss={() => undefined} />)).toContain('Read the markings');
