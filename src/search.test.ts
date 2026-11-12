@@ -55,12 +55,12 @@ describe('reference parsing and search', () => {
     expect(searchVerses(verses, '3:2-5').map(result => result.verse.id)).toEqual(['psalm-3-2', 'psalm-3-5']);
   });
 
-  it('classifies progressive references without falling back to word search', () => {
-    expect(parseSearch('Psa').kind).toBe('reference-incomplete');
-    expect(parseSearch('Psa ').kind).toBe('reference-incomplete');
+  it('searches bare book names while supporting progressive numeric references', () => {
+    expect(parseSearch('Psa').kind).toBe('word');
+    expect(parseSearch('Psa ').kind).toBe('word');
     expect(parseSearch('Psa 3').kind).toBe('reference-chapter');
     expect(parseSearch('Psa 3:').kind).toBe('reference-chapter');
-    expect(searchVerses(referenceFixture, 'Psa')).toEqual([]);
+    expect(searchVerses(referenceFixture, 'Psa').map(result => result.verse.id)).toEqual(['psalm-8-3']);
   });
 
   it('does not fall back to text search for a recognized reference with no match', () => {
@@ -113,6 +113,17 @@ describe('reference parsing and search', () => {
     expect(searchMultipleReferences(verses, verses, 'Ps 3:2,4-6').results.map(result => result.verse.id)).toEqual(['a', 'b', 'c']);
     expect(searchMultipleReferences(verses, verses, 'Ps 3:2; Acts 2:38, Ps 3:2').results.map(result => result.verse.id)).toEqual(['a', 'd']);
     expect(splitReferenceList('"faith, hope"')).toBeNull();
+  });
+
+  it('searches words that overlap book aliases and preserves internal apostrophes', () => {
+    const verses = [verse('words', 'Psalms', 5, 2, 1, "Hearken, he shall rejoice; mark the Lord's works, John.")];
+    for (const word of ['hearken', 'he', 'shall', 'rejoice', 'mark', "Lord's", 'John']) {
+      expect(parseSearch(word).kind).toBe('word');
+      expect(searchVerses(verses, word)).toHaveLength(1);
+      expect(searchVerses(verses, word, { exactWord: true })).toHaveLength(1);
+    }
+    expect(searchVerses(verses, 'Heb 5:2')).toEqual([]);
+    expect(parseSearch('Psa 5:').kind).toBe('reference-chapter');
   });
 
   it('supports simple exact-word AND and OR operators', () => {

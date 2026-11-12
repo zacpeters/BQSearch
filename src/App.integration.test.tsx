@@ -45,9 +45,9 @@ describe('BQ Search live input integration', () => {
     expect(host.textContent).toContain('Psalms 3:1');
     expect(host.textContent).toContain('John 3:2');
     await type('Psa');
-    expect(host.textContent).toContain('Continue typing a Scripture reference');
+    expect(host.textContent).toContain('Psalms 3:1');
     await type('Psa ');
-    expect(host.textContent).toContain('Continue typing a Scripture reference');
+    expect(host.textContent).toContain('Psalms 3:1');
     await type('Psa 3');
     expect(host.textContent).toContain('Psalms 3:4');
     await type('Psa 3:');

@@ -11,7 +11,7 @@ const bookAliases: Record<string, string> = {
   '1th': '1 Thessalonians', '1thes': '1 Thessalonians', '2th': '2 Thessalonians', '2thes': '2 Thessalonians', '1ti': '1 Timothy', '1tim': '1 Timothy', '2ti': '2 Timothy', '2tim': '2 Timothy', tit: 'Titus', ti: 'Titus', phm: 'Philemon', philem: 'Philemon', heb: 'Hebrews', he: 'Hebrews', jas: 'James', jam: 'James', ja: 'James',
   '1pe': '1 Peter', '1pet': '1 Peter', '2pe': '2 Peter', '2pet': '2 Peter', '1jo': '1 John', '1jn': '1 John', '2jo': '2 John', '2jn': '2 John', '3jo': '3 John', '3jn': '3 John', jude: 'Jude', jud: 'Jude', rev: 'Revelation', re: 'Revelation', apo: 'Revelation',
 };
-const clean = (value: string) => value.toLocaleLowerCase().replace(/[“”"']/g, '').replace(/\s+/g, ' ').trim();
+const clean = (value: string) => value.toLocaleLowerCase().replace(/[“”"]/g, '').replace(/\s+/g, ' ').trim();
 const compact = (value: string) => value.toLocaleLowerCase().replace(/[^a-z0-9]/g, '');
 const escaped = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const canonicalBooks = Object.keys(bookChapters);
@@ -28,6 +28,7 @@ function bookPattern(name: string) { return compact(name).split('').map(escaped)
 
 function parseReferencePart(raw: string): ParsedReference | null {
   const value = clean(raw);
+  if (!/\d/.test(value)) return null;
   const bare = value.match(/^(\d+)\s*(?::|\.|\s+)\s*(\d+)(?:\s*-\s*(\d+))?$/);
   if (bare) return { chapter: Number(bare[1]), verse: Number(bare[2]), endVerse: bare[3] ? Number(bare[3]) : undefined, bare: true };
   for (const name of bookNames) {
@@ -57,6 +58,7 @@ export function classifyReferenceInput(raw: string): ReferenceInput {
   const complete = parseReferenceQuery(raw);
   if (complete) return { status: 'complete', reference: complete };
   const value = clean(raw);
+  if (/^[\p{L}]+$/u.test(value)) return { status: aliasesByCompactName.has(value) ? 'incomplete' : 'none' };
   const bareChapter = value.match(/^\d+$/);
   if (bareChapter) return Number(value) > 0 ? { status: 'chapter', reference: { chapter: Number(value), bare: true } } : { status: 'invalid' };
   for (const name of bookNames) {
@@ -65,7 +67,10 @@ export function classifyReferenceInput(raw: string): ReferenceInput {
     const chapter = value.match(new RegExp(`^${pattern}\\s*(\\d+)(?::\\s*)?$`));
     if (chapter) return Number(chapter[1]) > 0 ? { status: 'chapter', reference: { book, chapter: Number(chapter[1]), bare: false } } : { status: 'invalid' };
     if (new RegExp(`^${pattern}(?:\\s*)$`).test(value)) return { status: 'incomplete' };
-    if (value.startsWith(compact(name)) || value.startsWith(name.toLocaleLowerCase())) return { status: 'incomplete' };
+    // Only reserve a book prefix when a reference-like suffix follows it.
+    // Ordinary words such as hearken (he), rejoice (re), and neighbour (ne)
+    // must remain searchable.
+    if (new RegExp(`^${pattern}\\s*(?:\\d.*|[^a-z\\s].*)$`).test(value)) return { status: 'incomplete' };
   }
   return { status: 'none' };
 }
@@ -78,7 +83,8 @@ export function parseSearch(raw: string): SearchQuery {
   const reference = classifyReferenceInput(raw);
   if (reference.status === 'complete') return { raw, normalized, kind: 'reference' };
   if (reference.status === 'chapter') return { raw, normalized, kind: 'reference-chapter' };
-  if (reference.status === 'incomplete') return { raw, normalized, kind: 'reference-incomplete' };
+  // A bare book name/alias can also be a Scripture word (he, John, mark).
+  if (reference.status === 'incomplete' && !/^[\p{L}]+$/u.test(normalized)) return { raw, normalized, kind: 'reference-incomplete' };
   if (reference.status === 'invalid') return { raw, normalized, kind: 'reference-invalid' };
   if (!/^".*"$/.test(raw.trim())) {
     if (/^\S+\s+(?:and|or)\s+\S+$/i.test(normalized)) return { raw, normalized, kind: normalized.match(/\sand\s/i) ? 'word-and' : 'word-or' };
@@ -157,7 +163,7 @@ export function searchMultipleReferences(allVerses: ScriptureVerse[], visibleVer
   for (const input of (splitReferenceList(raw) ?? raw.split(';')).map(segment => segment.trim())) {
     if (!input) { feedback.push({ input, status: 'invalid', availableCount: 0, visibleCount: 0 }); continue; }
     const parsed = parseSearch(input);
-    if (parsed.kind === 'reference-incomplete') { feedback.push({ input, status: 'incomplete', availableCount: 0, visibleCount: 0 }); continue; }
+    if (classifyReferenceInput(input).status === 'incomplete') { feedback.push({ input, status: 'incomplete', availableCount: 0, visibleCount: 0 }); continue; }
     if (parsed.kind !== 'reference' && parsed.kind !== 'reference-chapter') { feedback.push({ input, status: 'invalid', availableCount: 0, visibleCount: 0 }); continue; }
     const available = searchVerses(allVerses, input);
     const visible = available.filter(result => visibleIds.has(result.verse.id));
