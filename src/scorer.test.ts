@@ -2,6 +2,44 @@ import { describe, expect, it } from 'vitest';
 import { addScoreEvent, createLiveSession, resetQuestion, setCurrentQuestion, summarizeSession } from './scorer';
 
 describe('live scoring engine', () => {
+  it.each(['red', 'yellow'] as const)('keeps the %s interruption penalty when the other team answers', side => {
+    const other = side === 'red' ? 'yellow' : 'red';
+    for (const question of [1, 7, 13]) {
+      let session = createLiveSession('Junior');
+      session = addScoreEvent(session, { question, side, kind: 'error', quizzer: 0, interrupted: true });
+      session = addScoreEvent(session, { question, side: other, kind: 'correct', quizzer: 1 });
+      const value = question === 1 ? 10 : question === 7 ? 20 : 30;
+      const summary = summarizeSession(session);
+      expect(summary[side].score).toBe(10 - value / 2);
+      expect(summary[side].quizzers[0].errors).toBe(1);
+      expect(summary[side].quizzers[0].score).toBe(-value / 2);
+      expect(summary[other].score).toBe(10 + value);
+      // Editing the second ruling must retain the penalty exactly once.
+      session = addScoreEvent(session, { question, side: other, kind: 'error', quizzer: 1 });
+      expect(session.events).toHaveLength(2);
+      expect(summarizeSession(session)[side].score).toBe(10 - value / 2);
+      expect(summarizeSession(session)[other].score).toBe(10 - value / 2);
+    }
+  });
+
+  it('keeps an interruption penalty after no response and clears it when reset', () => {
+    let session = createLiveSession('Junior');
+    session = addScoreEvent(session, { question: 1, side: 'red', kind: 'error', quizzer: 0, interrupted: true });
+    session = addScoreEvent(session, { question: 1, side: 'question', kind: 'no-response' });
+    expect(summarizeSession(session).red.score).toBe(5);
+    expect(summarizeSession(resetQuestion(session)).red.score).toBe(10);
+  });
+
+  it('waits for the second response after an interruption on the final question', () => {
+    let session = createLiveSession('Junior');
+    session = addScoreEvent(session, { question: 15, side: 'red', kind: 'error', quizzer: 0, interrupted: true });
+    expect(session.quizEnded).toBe(false);
+    session = addScoreEvent(session, { question: 15, side: 'yellow', kind: 'correct', quizzer: 0 });
+    expect(session.quizEnded).toBe(true);
+    expect(summarizeSession(session).red.score).toBe(-5);
+    expect(summarizeSession(session).yellow.score).toBe(40);
+  });
+
   it('applies team bonus, question value, and quizzer bonus', () => {
     let session = createLiveSession('Junior');
     for (let question = 1; question <= 6; question++) session = addScoreEvent(session, { question, side: 'red', kind: 'correct', quizzer: 0 });

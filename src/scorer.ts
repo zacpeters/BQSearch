@@ -147,11 +147,15 @@ export function currentContest(session: LiveSession, side: TeamSide): ContestRes
 export function addScoreEvent(session: LiveSession, event: Omit<ScoreEvent, 'id' | 'createdAt'>): LiveSession {
   const now = new Date().toISOString();
   const responseEvent = event.kind === 'correct' || event.kind === 'error' || event.kind === 'no-response';
-  const retained = responseEvent ? session.events.filter(existing => existing.question !== event.question || (existing.kind !== 'correct' && existing.kind !== 'error' && existing.kind !== 'no-response')) : session.events;
+  const retained = responseEvent ? session.events.filter(existing => {
+    if (existing.question !== event.question || (existing.kind !== 'correct' && existing.kind !== 'error' && existing.kind !== 'no-response')) return true;
+    // The other team's response completes an interrupted question without undoing its penalty.
+    return existing.kind === 'error' && existing.interrupted === true && existing.side !== event.side;
+  }) : session.events;
   let next: LiveSession = { ...session, events: [...retained, { ...event, id: `${now}-${retained.length}`, createdAt: now }], updatedAt: now };
   if (responseEvent) {
     const profile = profileForDivision(next.division);
-    const regulationComplete = next.events.some(item => item.question === profile.regulationQuestions && (item.kind === 'correct' || item.kind === 'error' || item.kind === 'no-response'));
+    const regulationComplete = next.events.some(item => item.question === profile.regulationQuestions && (item.kind === 'correct' || (item.kind === 'error' && !item.interrupted) || item.kind === 'no-response'));
     if (!regulationComplete) {
       next = { ...next, overtimeStarted: false, quizEnded: false };
     } else {
