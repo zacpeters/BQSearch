@@ -40,4 +40,4 @@
 .roster-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}.roster-entry>input{min-width:0;margin-top:0!important}.roster-entry .roster-toggle{display:flex;align-items:center;gap:5px;white-space:nowrap}.roster-entry .roster-toggle input{width:auto;margin:0}
 .lookup-color-toggle{margin-left:auto;width:28px;height:28px;min-width:28px;min-height:28px;padding:0;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}.lookup-color-toggle:hover,.lookup-color-toggle:focus-visible{background:var(--surface-2);color:var(--text);outline:none}.lookup-color-toggle[aria-pressed=true]{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,var(--line));color:var(--accent)}
 
-.app-build{display:block;margin-top:3px;color:var(--muted);font:10px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0;text-align:left}
+.app-version{margin:20px 0 0;color:var(--muted);font-size:11px;text-align:center}

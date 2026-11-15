@@ -36,7 +36,6 @@ jobs:
         run: npm run build
         env:
           VITE_BASE_PATH: /BQSearch/
-          VITE_APP_VERSION: ${{ github.sha }}
       - name: Build Material Manager for GitHub Pages
         run: npm run admin:build
         env:
