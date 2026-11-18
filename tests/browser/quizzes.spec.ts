@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import path from 'node:path';
 
 const fixture = path.resolve('tests/fixtures/synthetic-catalog.json');
+const importFixture = path.resolve('tests/fixtures/user-import.csv');
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -41,6 +42,13 @@ test('creates a user collection/question and uses the generator controls', async
   await page.getByLabel('Answer text').fill('My local answer');
   await page.getByRole('button', { name: 'Save question' }).click();
   await expect(page.getByText('My local question')).toBeVisible();
+  await page.locator('.quiz-actions input[type=file]').setInputFiles(importFixture);
+  await expect(page.getByText('Import preview', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Commit import' }).click();
+  await expect(page.getByText(/Imported 1 user questions/)).toBeVisible();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export user data' }).click();
+  await expect(download).resolves.toBeTruthy();
   await page.getByRole('button', { name: 'Generate Quiz' }).click();
   await expect(page.getByRole('heading', { name: 'Generate quiz' })).toBeVisible();
   await expect(page.getByLabel('Start Verse')).toBeVisible();
@@ -51,4 +59,12 @@ test('creates a user collection/question and uses the generator controls', async
   await page.getByLabel('30-point questions').fill('0');
   await page.locator('.generator-button').click();
   await expect(page.getByText('Preview', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Save generated quiz' }).click();
+  await expect(page.getByRole('heading', { name: 'Saved quizzes' })).toBeVisible();
+  await page.reload();
+  await page.getByRole('button', { name: 'Quizzes' }).click();
+  await page.getByRole('button', { name: 'Saved Quizzes' }).click();
+  await expect(page.getByRole('heading', { name: 'Saved quizzes' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lookup', exact: true }).click();
+  await expect(page.getByRole('button', { name: /Go to BQ Search lookup/ })).toBeVisible();
 });
