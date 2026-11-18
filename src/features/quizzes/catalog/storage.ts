@@ -1,0 +1,7 @@
+import type { QuizCatalog } from '../types';
+
+const DB_NAME = 'bqsearch-quizzes'; const DB_VERSION = 1; const STORE = 'published-catalogs';
+function openCatalogDb(): Promise<IDBDatabase> { return new Promise((resolve, reject) => { const request = indexedDB.open(DB_NAME, DB_VERSION); request.onupgradeneeded = () => { if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE, { keyPath: 'catalogId' }); }; request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }); }
+export async function saveCatalog(catalog: QuizCatalog) { const db = await openCatalogDb(); return new Promise<void>((resolve, reject) => { const request = db.transaction(STORE, 'readwrite').objectStore(STORE).put(catalog); request.onsuccess = () => { db.close(); resolve(); }; request.onerror = () => { db.close(); reject(request.error); }; }); }
+export async function listCatalogs(): Promise<QuizCatalog[]> { const db = await openCatalogDb(); return new Promise((resolve, reject) => { const request = db.transaction(STORE).objectStore(STORE).getAll(); request.onsuccess = () => { db.close(); resolve(request.result as QuizCatalog[]); }; request.onerror = () => { db.close(); reject(request.error); }; }); }
+export async function getInstalledCatalog(): Promise<QuizCatalog | undefined> { const catalogs = await listCatalogs(); return catalogs.sort((a, b) => b.installedAt.localeCompare(a.installedAt))[0]; }

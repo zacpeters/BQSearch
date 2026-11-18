@@ -5,3 +5,8 @@ admin-dist/
 .env.*
 !.env.example
 .DS_Store
+# Authorized BQQuiz catalogs are installed through the development UI and must
+# never be copied into tracked source, public assets, or deployment output.
+.local-quiz-catalogs/
+bqquiz-catalog*.json
+**/bqquiz-catalog*.json

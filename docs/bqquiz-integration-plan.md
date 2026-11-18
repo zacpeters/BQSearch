@@ -502,3 +502,129 @@ The focused compatibility tests and TypeScript check pass. Full repository
 validation is run separately after this report is recorded. The next stage is
 Phase 2: read-only catalog loading and Question Bank/Library adapters, still
 without Generator or Practice UI activation.
+
+## Phase 2 implementation report
+
+Implementation status: complete for the local-development Library and Question
+Bank foundation. The catalog remains opt-in, local-only, and absent from the
+repository and production build. Generate Quiz and Practice are not implemented
+or exposed.
+
+### Files and feature boundary
+
+Added the isolated `src/features/quizzes/` boundary:
+
+- `types.ts` — catalog, published question/quiz/collection, and user-record
+  contracts adapted from the reviewed BQQuiz model.
+- `catalog/loader.ts` — schema/version validation, relationship checks, ID
+  preservation, reference warnings, and explicit file parsing.
+- `catalog/storage.ts` — catalog-only IndexedDB database access.
+- `library/QuizLibrary.tsx` — collection-first Library, quiz lists, counts,
+  original order, source metadata, and read-only question preview.
+- `question-bank/QuestionBank.tsx` — search, filters, user CRUD, source and
+  reference display, and migration-compatible user export.
+- `question-bank/importers.ts` — CSV/JSON preview parsing and reference warnings.
+- `storage/user-storage.ts` — explicit access to the existing BQQuiz version-3
+  user stores without touching BQ Search Scripture stores.
+- Matching synthetic tests for catalog validation, catalog persistence, and
+  question-bank import behavior.
+
+`src/App.tsx` now has a minimal `Quizzes` entry controlled by
+`VITE_ENABLE_QUIZZES === 'true'`. The feature is lazy-loaded and uses the
+existing BQ Search shell, toolbar, context, styles, theme, and back navigation.
+No second application shell or service worker was added. `.gitignore` includes
+local catalog filename/directory safeguards.
+
+### Safe catalog-loading architecture
+
+The 45-quiz/900-question BQQuiz catalog was not copied, imported, or hashed into
+tracked BQ Search files. The feature accepts an explicitly selected JSON file
+through the local **Install local catalog** control. `validateCatalog()` requires
+schema version 2, source-set metadata, unique collection/quiz/question IDs,
+valid collection and quiz relationships, required question fields, point values,
+source metadata, and preserved question arrays. It does not rewrite question
+wording, answers, classifications, IDs, order, or references. Invalid references
+are reported as warnings so browsing is not blocked.
+
+Installed catalogs are stored in the separate, versioned `bqsearch-quizzes`
+IndexedDB database under `published-catalogs`. Published records are read-only.
+The existing `bqquiz-local` database remains the user-data boundary, and
+`scripture-lookup` is never opened by the catalog installer. Replacing a catalog
+is explicit and does not clear user collections or questions. No startup catalog
+installation or data migration occurs.
+
+When no catalog is installed, the feature shows an explanatory local-file empty
+state. To run the local experience:
+
+```sh
+VITE_ENABLE_QUIZZES=true npm run dev
+```
+
+Open the local BQ Search URL, choose **Quizzes**, select **Install local
+catalog**, and provide an authorized catalog JSON file outside this repository.
+Use **Library** for collection/quiz browsing and **Question Bank** for filters,
+user collections, user questions, imports, and export. The catalog file is not
+served by Vite, copied to `public/`, or included in deployment output.
+
+### Library
+
+The collection-first Library preserves publisher identity, collection and quiz
+IDs, quiz numbering, question counts, point totals, source filenames, original
+question order, and read-only published records. Users can search collections,
+open a quiz, and expand individual question previews. Generate and Practice
+actions are intentionally absent.
+
+### Question Bank
+
+Question Bank supports question/answer/reference search, collection, publisher,
+point-value, classification, and Scripture-reference filters. Published and
+user-created records are visually distinguished. User collections can be
+created, renamed, and deleted with confirmation; user questions can be created,
+edited, and deleted with confirmation. Point values and reference syntax are
+validated, stable IDs are preserved, and published records are never edited or
+copied implicitly.
+
+CSV and JSON imports are preview-only until the user explicitly commits. The
+preview reports malformed records, duplicate IDs, and reference warnings. The
+commit writes user collections/questions in one IndexedDB transaction and skips
+IDs already used by the published or user set. JSON imports accept both the
+original BQQuiz `{ collections, questions }` shape and the Phase 0–1 migration
+bundle's `data.userCollections`/`data.userQuestions` shape. Export uses the
+Phase 0–1 versioned migration bundle and therefore remains compatible with the
+existing bridge.
+
+Reference chips use the Phase 0–1 `ScriptureProvider` against the active BQ
+Search pack and display local, checking, invalid, missing, division, or range
+states. Scripture text is not duplicated into question records.
+
+### Tests and browser status
+
+Added synthetic tests for no/valid/unsupported/duplicate/missing-reference
+catalogs, immutable published data, original ordering, point values and
+classifications, isolated catalog replacement, CSV/JSON import preview,
+duplicate handling, and migration-bundle compatibility. The full repository
+suite passes without weakening existing tests.
+
+Browser validation was not run. This checkout has no configured Playwright
+script or browser test suite for the new feature, and no browser dependency was
+installed for this phase. The local development path is covered by TypeScript,
+Vitest, and production-build checks; visual and refresh-persistence validation
+remain Phase 2 follow-up work before wider enablement.
+
+### Security, deployment, and remaining work
+
+The default build has the feature flag off. The locally enabled build contains
+only quiz code and validation logic; a production-output scan found no
+published BQQuiz IDs, titles, question wording, or answers. The existing
+GitHub Pages workflow, PWA/service-worker configuration, public assets, and
+Cloudflare state are unchanged. The original BQQuiz project remains unchanged.
+
+Remaining functionality includes richer CSV quoting, user-facing conflict
+remapping UI, catalog deletion/history, browser-level accessibility and
+responsive checks, and an explicit catalog integrity/signature policy. The
+feature is not ready for production enablement or deployment.
+
+Phase 3 prerequisites are a reviewed local catalog contract, a user-visible
+conflict/import audit flow, browser validation of Library and Question Bank, and
+approval to add the Generator route. Phase 3 must continue to keep generation
+and practice disabled until those prerequisites pass.
