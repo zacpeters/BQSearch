@@ -43,6 +43,8 @@ export function validateCatalog(value: unknown): CatalogValidation {
   return { valid: true, errors, warnings, catalog };
 }
 
-export async function readCatalogFile(file: File): Promise<CatalogValidation> {
-  try { return validateCatalog(JSON.parse(await file.text())); } catch { return { valid: false, errors: ['Catalog file is not valid JSON.'], warnings: [] }; }
+function stable(value: unknown): string { if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`; if (value && typeof value === 'object') return `{${Object.keys(value as Record<string, unknown>).sort().map(key => `${JSON.stringify(key)}:${stable((value as Record<string, unknown>)[key])}`).join(',')}}`; return JSON.stringify(value); }
+export async function sha256CatalogDigest(value: unknown): Promise<string> { const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(stable(value))); return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, '0')).join(''); }
+export async function readCatalogFile(file: File, expectedDigest?: string): Promise<CatalogValidation> {
+  try { const value = JSON.parse(await file.text()); const result = validateCatalog(value); if (!result.valid || !result.catalog) return result; const digest = await sha256CatalogDigest(value); if (expectedDigest?.trim() && digest !== expectedDigest.trim().toLowerCase()) return { valid: false, errors: [`Catalog digest mismatch. Computed ${digest}; expected ${expectedDigest.trim().toLowerCase()}.`], warnings: [] }; return { ...result, catalog: { ...result.catalog, catalogDigest: digest } }; } catch { return { valid: false, errors: ['Catalog file is not valid JSON.'], warnings: [] }; }
 }

@@ -11,22 +11,25 @@
     "admin:build": "tsc -b && vite build --config admin/vite.config.ts",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:browser": "playwright test",
+    "test:browser:off": "playwright test --config=playwright.off.config.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "latest",
+    "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "lucide-react": "latest",
+    "typescript": "latest",
+    "vite": "latest",
     "vite-plugin-pwa": "latest"
   },
   "devDependencies": {
-    "vitest": "latest",
-    "jsdom": "latest",
-    "fake-indexeddb": "latest",
+    "@playwright/test": "^1.65.1",
     "@types/react": "latest",
-    "@types/react-dom": "latest"
+    "@types/react-dom": "latest",
+    "fake-indexeddb": "latest",
+    "jsdom": "latest",
+    "vitest": "latest"
   }
 }

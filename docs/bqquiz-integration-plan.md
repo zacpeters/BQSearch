@@ -628,3 +628,96 @@ Phase 3 prerequisites are a reviewed local catalog contract, a user-visible
 conflict/import audit flow, browser validation of Library and Question Bank, and
 approval to add the Generator route. Phase 3 must continue to keep generation
 and practice disabled until those prerequisites pass.
+
+## Phase 3 implementation report
+
+Phase 3 adds the locally enabled Generator and completes the deferred browser
+validation. The work remains isolated behind `VITE_ENABLE_QUIZZES=true`; the
+default build and existing Lookup/Score Sheet behavior are unchanged. Practice,
+deployment, Cloudflare, and production catalog publication remain out of scope.
+
+### Files and architecture
+
+The Generator domain logic is in `src/features/quizzes/generator.ts`. It adapts
+the tested BQQuiz selection behavior while using BQ Search's
+`projectVersesForDivision`, `getDivisionStudyNumber`, and normalized Scripture
+references. `src/features/quizzes/generator/QuizGenerator.tsx` is the local
+configuration and preview UI; `GeneratedQuizList.tsx` provides saved-quiz
+rename, duplicate, delete, and missing-content diagnostics. Generator records
+and coverage presets use the existing `bqquiz-local` version-3 boundary through
+`src/features/quizzes/storage/generator-storage.ts`; no new service worker or
+database is introduced.
+
+The study selectors are searchable, keyboard/touch-compatible inputs backed by
+the active pack's actual division projection. Options display `#study number ·
+reference`, preserve gaps, and reject invalid or reversed ranges. Presets retain
+season, division, pack, catalog, and resolved study-number context; an
+incompatible preset is reported instead of being silently applied.
+
+### Generator behavior
+
+The Generator supports collection and publisher intersection filters, normalized
+classification filters, all/select-all/clear-all type controls, balanced and
+seeded-random strategies, the default 8/9/3 distribution, custom point counts,
+live pool counts, shortage diagnostics, deterministic ordering, preview, save,
+rename, duplicate, delete, refresh persistence, and regeneration from saved
+parameters. Generated quizzes preserve source IDs, point values,
+classification, references, source metadata, seed, and normalized filters.
+
+Restricted coverage requires every structured reference to resolve in the
+active pack/division and to fall inside the selected actual study-number range.
+Reference-less questions remain browseable and eligible only for unrestricted
+generation. The nine approved Lift Up reference-less IDs (`Q1-12`, `Q6-2`,
+`Q8-2`, `Q8-8`, `Q13-8`, `Q15-10`, `Q19-5`, `Q19-8`, `Q20-6`) are not given
+invented metadata and are reported in restricted-range diagnostics.
+
+### Phase 2 hardening
+
+Catalog loading now computes a reproducible canonical SHA-256 digest and can
+compare it with an independently supplied trusted digest. The catalog remains
+an explicit local installer input and is stored separately from user content.
+CSV import now handles quoted commas, escaped quotes, CR/LF, and multiline
+fields. Import previews report malformed rows, duplicate IDs, reference
+warnings, and existing IDs that will be skipped; commit is explicit and does
+not overwrite records. Saved generated quizzes resolve both published and user
+question IDs and report missing content without substitution. Vitest excludes
+Playwright files so `npm test` remains the unit-test command.
+
+### Browser validation
+
+Playwright is configured in `playwright.config.ts` and
+`playwright.off.config.ts`, using the installed Chrome channel and a local Vite
+server. Committed synthetic fixtures contain no published quiz wording or
+answers. Desktop enabled tests passed for catalog installation, refresh
+persistence, Library/Question Bank navigation and search, user collection and
+question creation, and Generator controls/preview. The iPad-sized Chromium
+profile passed the same flows. The separate feature-flag-off suite passed and
+confirmed the Quizzes navigation is absent. Browser tests also dismiss the
+existing first-run walkthrough as test setup; the application walkthrough was
+not changed.
+
+Run locally with:
+
+```sh
+VITE_ENABLE_QUIZZES=true npm run dev
+npm run test:browser
+npm run test:browser:off
+```
+
+Install an authorized catalog through **Quizzes → Install local catalog**. Do
+not place the published catalog in this repository, `public/`, or Vite output.
+
+### Validation and remaining work
+
+Phase 3 validation includes `npm run validate:packs`, the full Vitest suite,
+`npx tsc --noEmit -p tsconfig.app.json`, `npm run build`, desktop and
+iPad-sized Playwright suites, and the flag-off Playwright suite. The production
+output scan found no restricted published quiz IDs, titles, wording, or
+answers. The production workflow, existing service worker configuration,
+original BQQuiz source, and `scripture-lookup` database remain unchanged.
+
+Practice integration is the next stage. It still needs the Practice Scripture
+drawer, session lifecycle integration, and any required generation-to-practice
+handoff. Catalog authenticity remains digest-based unless a separately trusted
+signature/manifest is supplied; a hash embedded in the catalog itself is not
+treated as proof of authenticity.

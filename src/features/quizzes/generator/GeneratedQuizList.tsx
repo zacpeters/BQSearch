@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { deleteGeneratedQuiz, saveGeneratedQuiz } from '../storage/generator-storage';
+import type { GeneratedQuiz, QuizCatalog, UserQuestion } from '../types';
+
+export function GeneratedQuizList({ quizzes, catalog, userQuestions, onChanged, onBack }: { quizzes: GeneratedQuiz[]; catalog: QuizCatalog; userQuestions: UserQuestion[]; onChanged: () => Promise<void>; onBack: () => void }) {
+  const [message, setMessage] = useState('');
+  const questions = (quiz: GeneratedQuiz) => quiz.questionIds.map(id => [...catalog.questions, ...userQuestions].find(question => question.id === id)).filter(Boolean);
+  const rename = async (quiz: GeneratedQuiz) => { const title = prompt('Quiz name', quiz.title)?.trim(); if (!title) return; await saveGeneratedQuiz({ ...quiz, title, updatedAt: new Date().toISOString() }); await onChanged(); };
+  const duplicate = async (quiz: GeneratedQuiz) => { await saveGeneratedQuiz({ ...quiz, id: `custom-${crypto.randomUUID()}`, title: `${quiz.title} copy`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }); await onChanged(); };
+  const remove = async (quiz: GeneratedQuiz) => { if (!confirm(`Delete ${quiz.title}?`)) return; await deleteGeneratedQuiz(quiz.id); await onChanged(); };
+  return <section className="quiz-page"><div className="quiz-page-heading"><div><span className="context-label">QUIZZES · SAVED QUIZZES</span><h1>Saved quizzes</h1><p>{quizzes.length} local generated quiz{quizzes.length === 1 ? '' : 'zes'}</p></div><button className="secondary-button compact" onClick={onBack}>Back to Lookup</button></div>{message && <div className="quiz-message">{message}</div>}{!quizzes.length ? <div className="quiz-empty">No generated quizzes saved yet.</div> : <div className="saved-quiz-list">{quizzes.map(quiz => { const missing = quiz.questionIds.length - questions(quiz).length; return <article className="saved-quiz-card" key={quiz.id}><div><strong>{quiz.title}</strong><small>{quiz.questionIds.length} questions · {quiz.totalPoints} possible points · seed {quiz.seed}</small><small>{missing ? `${missing} question${missing === 1 ? '' : 's'} missing from the installed catalog` : `${quiz.filters.division} · ${quiz.filters.strategy} · ${quiz.catalogVersion}`}</small></div><div className="saved-quiz-actions"><button onClick={() => void rename(quiz)}>Rename</button><button onClick={() => void duplicate(quiz)}>Duplicate</button><button onClick={() => void remove(quiz)}>Delete</button></div></article>; })}</div>}</section>;
+}

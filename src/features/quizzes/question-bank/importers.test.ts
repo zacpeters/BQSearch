@@ -14,4 +14,11 @@ describe('question-bank imports', () => {
     const report = parseCsvImport('external id,collection,question,answer,point value,scripture references\nq,Local,Question,Answer,20,"Psalm 3:1"');
     expect(report.errors).toEqual([]); expect(report.questions[0].pointValue).toBe(20); expect(report.questions[0].references[0].chapter).toBe(3);
   });
+  it('preserves quoted commas, escaped quotes, and multiline fields', () => {
+    const csv = 'external id,collection,question,answer,point value,scripture references\nq,Local,"Question, with ""quoted"" words","First line\nsecond line",10,"Psalm 3:1"';
+    const report = parseCsvImport(csv);
+    expect(report.errors).toEqual([]);
+    expect(report.questions[0].rawQuestion).toBe('Question, with "quoted" words');
+    expect(report.questions[0].rawAnswer).toBe('First line\nsecond line');
+  });
 });

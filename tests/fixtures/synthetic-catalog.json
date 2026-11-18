@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 2,
+  "sourceSet": { "id": "synthetic-catalog", "title": "Synthetic local catalog", "edition": "browser-test", "status": "verified" },
+  "collections": [{ "id": "synthetic-collection", "publisher": "Synthetic Publisher", "name": "Synthetic Collection", "sourceFilename": "fixture.json", "quizIds": ["synthetic-quiz"] }],
+  "quizzes": [{ "id": "synthetic-quiz", "collectionId": "synthetic-collection", "quizNumber": 1, "title": "Synthetic Quiz 1", "edition": "browser-test", "questionIds": ["synthetic-q1", "synthetic-q2", "synthetic-q3"], "sections": [{ "pointValue": 10, "startQuestion": 1, "endQuestion": 3 }] }],
+  "questions": [
+    { "id": "synthetic-q1", "collectionId": "synthetic-collection", "quizNumber": 1, "originalNumber": 1, "pointValue": 10, "classification": "Direct", "rawQuestion": "Which synthetic verse is first?", "rawAnswer": "Synthetic answer one", "references": [{ "book": "Psalms", "chapter": 3, "startVerse": 1 }], "source": { "documentId": "synthetic-fixture", "page": 1, "publisher": "Synthetic Publisher", "collection": "Synthetic Collection" }, "textRevision": "fixture-v1" },
+    { "id": "synthetic-q2", "collectionId": "synthetic-collection", "quizNumber": 1, "originalNumber": 2, "pointValue": 20, "classification": "Two-part", "rawQuestion": "Which synthetic verse is second?", "rawAnswer": "Synthetic answer two", "references": [{ "book": "Psalms", "chapter": 3, "startVerse": 2 }], "source": { "documentId": "synthetic-fixture", "page": 2, "publisher": "Synthetic Publisher", "collection": "Synthetic Collection" }, "textRevision": "fixture-v1" },
+    { "id": "synthetic-q3", "collectionId": "synthetic-collection", "quizNumber": 1, "originalNumber": 3, "pointValue": 30, "classification": "Quotation", "rawQuestion": "Which synthetic verse is fourth?", "rawAnswer": "Synthetic answer three", "references": [{ "book": "Psalms", "chapter": 3, "startVerse": 4 }], "source": { "documentId": "synthetic-fixture", "page": 3, "publisher": "Synthetic Publisher", "collection": "Synthetic Collection" }, "textRevision": "fixture-v1" }
+  ]
+}
