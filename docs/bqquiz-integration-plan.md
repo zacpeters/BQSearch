@@ -721,3 +721,50 @@ drawer, session lifecycle integration, and any required generation-to-practice
 handoff. Catalog authenticity remains digest-based unless a separately trusted
 signature/manifest is supplied; a hash embedded in the catalog itself is not
 treated as proof of authenticity.
+
+## Public 2027 catalog on the integration branch
+
+On November 18, 2026, the user explicitly authorized public distribution of
+`BQQuiz/src/data/extracted/2027/index.json`, including the BQ Powers and Lift Up
+published questions and answers. This supersedes the earlier local-only
+restriction for that exact file. The authorization covers 45 quizzes and 900
+questions across the two collections. It excludes the original PDFs, extraction
+artifacts, browser exports, and other BQQuiz source material.
+
+The byte-for-byte copy lives at
+`src/features/quizzes/catalog/bqquiz-2027.json`. The source file SHA-256 is
+`5fb0bbc4aad5a10ae2b1f118b50e0ea0292f2be2add81c7641d91a7e01ab2f4b`.
+Quizzes verifies its canonical JSON SHA-256 against the value pinned in
+`catalog/bundled.ts` before exposing any records. The nine source questions
+without structured references retain that metadata as supplied.
+
+With `VITE_ENABLE_QUIZZES=true`, Vite emits a content-hashed catalog asset and
+the existing Workbox service worker precaches it under the configured base
+path. The Library, Question Bank, and Generator use the verified catalog on
+first open. An approved update replaces the bundled version through the app
+and service worker update, with no automatic writes to catalog records. When published
+collection IDs overlap, the bundled collection takes priority. Other locally
+installed collections remain available, with newer manual installs taking
+priority over older manual installs for the same IDs. Existing user records
+and saved quizzes stay in their own stores.
+
+**Quizzes → Advanced catalog options → Install local catalog** accepts a
+reviewed manual catalog and an optional trusted SHA-256. If the bundle fails
+to load or verify, Quizzes can still use available manual installations.
+
+To migrate a browser-only collection, open the original BQQuiz in the browser
+profile and at the origin where it was created. Use **Question Bank → Export**
+to save `bqquiz-user-content.json` locally. In BQSearch, use
+**Quizzes → Question Bank → Import**, review the counts and skipped IDs, and
+select **Commit import**. This transfers user collections and questions.
+Keep the export private and retain the original profile for BQQuiz saved
+practice sessions, generated quizzes, and presets.
+
+Use `npm run test:browser` to run the enabled production build with the
+`/BQSearch-Preview/` base path and exercise desktop and iPad-sized viewports.
+Run `npm run test:browser:off` to verify flag-off navigation. Run
+`npm run validate:packs` and `npm test` for pack and catalog validation.
+When updating the bundled JSON, verify approval for the new bytes, update the
+pinned canonical digest, and coordinate the exact file SHA-256 with the
+separate preview artifact check. The preview can be refreshed immediately
+through **BQSearch-Preview → Actions → Deploy BQ Search preview → Run workflow**.

@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Division, ScripturePack } from '../../types';
-import { getInstalledCatalog, saveCatalog } from './catalog/storage';
+import { loadBundledCatalog } from './catalog/bundled';
+import { combineCatalogs } from './catalog/combine';
+import { listCatalogs, saveCatalog } from './catalog/storage';
 import { readCatalogFile } from './catalog/loader';
 import { QuizLibrary } from './library/QuizLibrary';
 import { loadUserQuestionState, QuestionBank } from './question-bank/QuestionBank';
@@ -9,11 +11,101 @@ import { GeneratedQuizList } from './generator/GeneratedQuizList';
 import { listGeneratedQuizzes } from './storage/generator-storage';
 import type { GeneratedQuiz, QuizCatalog, UserCollection, UserQuestion } from './types';
 
+const tabs = [
+  ['library', 'Library'],
+  ['bank', 'Question Bank'],
+  ['generator', 'Generate Quiz'],
+  ['saved', 'Saved Quizzes'],
+] as const;
+
 export default function QuizApp({ pack, division, studyStart, studyEnd, onBack }: { pack: ScripturePack; division: Division; studyStart: number; studyEnd: number; onBack: () => void }) {
-  const [catalog, setCatalog] = useState<QuizCatalog>(); const [tab, setTab] = useState<'library' | 'bank' | 'generator' | 'saved'>('library'); const [userCollections, setUserCollections] = useState<UserCollection[]>([]); const [userQuestions, setUserQuestions] = useState<UserQuestion[]>([]); const [generatedQuizzes, setGeneratedQuizzes] = useState<GeneratedQuiz[]>([]); const [message, setMessage] = useState(''); const [expectedDigest, setExpectedDigest] = useState(''); const input = useRef<HTMLInputElement>(null);
-  const refresh = async () => { const [installed, users, saved] = await Promise.all([getInstalledCatalog(), loadUserQuestionState(), listGeneratedQuizzes()]); setCatalog(installed); setUserCollections(users.collections); setUserQuestions(users.questions); setGeneratedQuizzes(saved); };
-  useEffect(() => { void refresh().catch(error => setMessage(error instanceof Error ? error.message : 'Unable to load local quiz data.')); }, []);
-  const install = async (file: File) => { const result = await readCatalogFile(file, expectedDigest); if (!result.valid || !result.catalog) { setMessage([...result.errors, ...result.warnings].join(' ')); return; } await saveCatalog(result.catalog); setCatalog(result.catalog); setMessage(`Installed ${result.catalog.sourceSet.title} locally. Digest ${result.catalog.catalogDigest}. Published records remain read-only.`); };
-  if (!catalog) return <section className="quiz-page"><div className="quiz-page-heading"><div><span className="context-label">QUIZZES</span><h1>Local quiz catalog</h1><p>No published catalog is installed in this browser.</p></div><button className="secondary-button compact" onClick={onBack}>Back to Lookup</button></div><div className="quiz-empty-panel"><strong>Install an authorized catalog file to continue.</strong><p>Choose a reviewed JSON catalog supplied separately by a maintainer. It is stored locally in the quiz database and is not bundled, uploaded, or published by BQ Search.</p><input className="digest-input" aria-label="Expected catalog SHA-256" placeholder="Optional trusted SHA-256 digest" value={expectedDigest} onChange={event => setExpectedDigest(event.target.value)}/><button className="primary-button" onClick={() => input.current?.click()}>Install local catalog</button><input ref={input} hidden type="file" accept=".json" onChange={event => { const file = event.target.files?.[0]; if (file) void install(file); event.currentTarget.value = ''; }}/>{message && <div className="quiz-message" role="status">{message}</div>}</div></section>;
-  return <section className="quiz-shell"><div className="quiz-nav"><div><span className="context-label">QUIZZES</span><strong>{catalog.sourceSet.title}</strong><small>{catalog.catalogVersion} · local catalog · SHA-256 {catalog.catalogDigest?.slice(0, 12) ?? 'not recorded'}…</small></div><div className="quiz-nav-actions"><button className={tab === 'library' ? 'selected' : ''} onClick={() => setTab('library')}>Library</button><button className={tab === 'bank' ? 'selected' : ''} onClick={() => setTab('bank')}>Question Bank</button><button className={tab === 'generator' ? 'selected' : ''} onClick={() => setTab('generator')}>Generate Quiz</button><button className={tab === 'saved' ? 'selected' : ''} onClick={() => setTab('saved')}>Saved Quizzes</button><button onClick={() => input.current?.click()}>Replace catalog</button><button onClick={onBack}>Lookup</button><input ref={input} hidden type="file" accept=".json" onChange={event => { const file = event.target.files?.[0]; if (file) void install(file); event.currentTarget.value = ''; }}/></div></div>{message && <div className="quiz-message" role="status">{message}<button onClick={() => setMessage('')}>Dismiss</button></div>}{tab === 'library' && <QuizLibrary catalog={catalog} onBack={onBack}/>} {tab === 'bank' && <QuestionBank catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onChanged={refresh} onBack={onBack}/>} {tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => { await refresh(); setTab('saved'); }} onBack={onBack}/>} {tab === 'saved' && <GeneratedQuizList quizzes={generatedQuizzes} catalog={catalog} userQuestions={userQuestions} onChanged={refresh} onBack={onBack}/>}</section>;
+  const [bundled, setBundled] = useState<QuizCatalog>();
+  const [installed, setInstalled] = useState<QuizCatalog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<(typeof tabs)[number][0]>('library');
+  const [userCollections, setUserCollections] = useState<UserCollection[]>([]);
+  const [userQuestions, setUserQuestions] = useState<UserQuestion[]>([]);
+  const [generatedQuizzes, setGeneratedQuizzes] = useState<GeneratedQuiz[]>([]);
+  const [loadMessage, setLoadMessage] = useState('');
+  const [importMessage, setImportMessage] = useState('');
+  const [expectedDigest, setExpectedDigest] = useState('');
+  const [importing, setImporting] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+  const catalog = useMemo(() => combineCatalogs(bundled, installed), [bundled, installed]);
+
+  const refreshUserData = async () => {
+    const [users, saved] = await Promise.all([loadUserQuestionState(), listGeneratedQuizzes()]);
+    setUserCollections(users.collections);
+    setUserQuestions(users.questions);
+    setGeneratedQuizzes(saved);
+  };
+
+  useEffect(() => {
+    void Promise.allSettled([
+      loadBundledCatalog().then(setBundled),
+      listCatalogs().then(setInstalled),
+      refreshUserData(),
+    ]).then(([published, local, user]) => {
+      if (published.status === 'rejected') setLoadMessage('Unable to load the bundled quiz catalog. Reopen Quizzes to retry.');
+      if (local.status === 'rejected' || user.status === 'rejected') setLoadMessage('Unable to load some local quiz data. Reopen Quizzes to retry.');
+      setLoading(false);
+    });
+  }, []);
+
+  const install = async (file: File) => {
+    setImporting(true);
+    setImportMessage('');
+    try {
+      const result = await readCatalogFile(file, expectedDigest);
+      if (!result.catalog) {
+        setImportMessage([...result.errors, ...result.warnings].join(' '));
+        return;
+      }
+      await saveCatalog(result.catalog);
+      setInstalled(await listCatalogs());
+      setImportMessage(`Installed ${result.catalog.sourceSet.title} locally. SHA-256 ${result.catalog.catalogDigest}.`);
+    } catch (error) {
+      setImportMessage(error instanceof Error ? error.message : 'Unable to install the local catalog.');
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  if (loading) return <div className="loading" role="status">Loading quiz catalogs…</div>;
+
+  return (
+    <section className="quiz-shell">
+      <div className="quiz-nav">
+        <div>
+          <span className="context-label">QUIZZES</span>
+          <strong>{catalog?.sourceSet.title ?? 'Quiz catalogs'}</strong>
+          {catalog && <small>{catalog.catalogVersion} · {bundled ? 'bundled' : 'local'} · SHA-256 {catalog.catalogDigest?.slice(0, 12) ?? 'unavailable'}</small>}
+        </div>
+        <div className="quiz-nav-actions">
+          {catalog && tabs.map(([id, label]) => <button key={id} className={tab === id ? 'selected' : ''} onClick={() => setTab(id)}>{label}</button>)}
+          <button onClick={onBack}>Lookup</button>
+        </div>
+      </div>
+      {loadMessage && <div className="quiz-message" role="status">{loadMessage}<button onClick={() => setLoadMessage('')}>Dismiss</button></div>}
+      {!catalog && <div className="quiz-empty">No published catalog is available.</div>}
+      {catalog && tab === 'library' && <QuizLibrary catalog={catalog} onBack={onBack}/>}
+      {catalog && tab === 'bank' && <QuestionBank catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onChanged={refreshUserData} onBack={onBack}/>}
+      {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => { await refreshUserData(); setTab('saved'); }} onBack={onBack}/>}
+      {catalog && tab === 'saved' && <GeneratedQuizList quizzes={generatedQuizzes} catalog={catalog} userQuestions={userQuestions} onChanged={refreshUserData} onBack={onBack}/>}
+      <details className="quiz-editor">
+        <summary>Advanced catalog options</summary>
+        <p>Install a reviewed JSON catalog in this browser. Collections in the bundled catalog take precedence when IDs match.</p>
+        <div className="quiz-actions">
+          <input className="digest-input" aria-label="Expected catalog SHA-256" placeholder="Optional trusted SHA-256 digest" value={expectedDigest} onChange={event => setExpectedDigest(event.target.value)}/>
+          <button className="secondary-button compact" disabled={importing} onClick={() => input.current?.click()}>Install local catalog</button>
+          <input ref={input} hidden type="file" accept=".json" onChange={event => {
+            const file = event.target.files?.[0];
+            if (file) void install(file);
+            event.currentTarget.value = '';
+          }}/>
+        </div>
+        {importMessage && <div className="quiz-message" role="status">{importMessage}</div>}
+      </details>
+    </section>
+  );
 }
