@@ -376,3 +376,129 @@ compatibility tests, and implement the local-pack `ScriptureProvider` plus the
 versioned export/import bridge. This establishes the safest seam for the later
 Library, Generator, and Practice work without changing production navigation or
 the existing GitHub Pages deployment.
+
+## Phase 0–1 implementation report
+
+Implementation status: complete for the non-UI foundation. The BQQuiz UI,
+catalog, production routes, service worker, Cloudflare infrastructure, and
+automatic migration remain intentionally inactive.
+
+### Files changed
+
+- `src/integration/contracts.ts` — shared Scripture, pack identity, lookup
+  result, and migration record contracts.
+- `src/integration/scripture-provider.ts` — pure BQ Search pack-backed provider
+  and reference normalization/order utilities.
+- `src/integration/migration.ts` — versioned JSON bundle creation, validation,
+  preview, conflict planning, independent `bqquiz-local` IndexedDB access, and
+  atomic commit.
+- `src/integration/scripture-provider.test.ts` — approved-pack provider
+  compatibility fixtures and behavior tests.
+- `src/integration/migration.test.ts` — migration manifest, validation,
+  conflict, relationship, round-trip, and BQ Search coexistence tests.
+
+No BQQuiz files were modified. The inspected BQQuiz source files were preserved
+in a temporary recoverable snapshot before adaptation; the source folder was
+read-only throughout this phase.
+
+### Shared contracts and provider API
+
+`src/integration/contracts.ts` defines `ScriptureReference`,
+`NormalizedScriptureReference`, `ScripturePackIdentity`,
+`ResolvedScriptureVerse`, `ScriptureLookupResult`, and `ScriptureProvider`.
+`ScriptureProvider` exposes:
+
+```ts
+getVerse(reference): Promise<ScriptureLookupResult>
+getVerses(references): Promise<ScriptureLookupResult[]>
+getByStudyNumber(studyNumber): ScriptureLookupResult | undefined
+```
+
+`createPackScriptureProvider(pack, { division, studyStart?, studyEnd? })` uses
+the active approved pack only. It normalizes book aliases, resolves a single
+verse or inclusive multi-verse range, preserves the pack's division-specific
+study number, and returns pack ID/version/season/source metadata with every
+result. `getVerses()` supports multiple citations without merging them into a
+single ambiguous result.
+
+Unavailable results are explicit and never contain fabricated text:
+`invalid-reference`, `missing-verse`, `outside-division`, and
+`outside-study-range`. Canonical order is derived from the existing book order;
+study order is always read through `getDivisionStudyNumber()` and the pack's
+actual mapping. The provider does not import or call `src/material/retrieval.ts`
+and has no network dependency.
+
+### Migration format and conflict policy
+
+The JSON format identifier is `bqsearch-bqquiz-user-data`, version `1`. A
+manifest records source application, source schema version, export timestamp,
+data counts, and optional catalog ID/version. Data is limited to user
+collections, user questions, custom quizzes, coverage presets, and practice
+sessions. Scripture packs, BQ Search settings/live sessions, credentials,
+tokens, source PDFs, and caches are excluded.
+
+Example manifest using fabricated values:
+
+```json
+{
+  "format": "bqsearch-bqquiz-user-data",
+  "formatVersion": 1,
+  "sourceApplication": "bqquiz",
+  "sourceSchemaVersion": 3,
+  "exportedAt": "2030-01-02T03:04:05.000Z",
+  "counts": {
+    "userCollections": 1,
+    "userQuestions": 2,
+    "customQuizzes": 1,
+    "coveragePresets": 1,
+    "sessions": 1
+  },
+  "catalogId": "example-catalog",
+  "catalogVersion": "example-1"
+}
+```
+
+Import is explicit and never runs at startup. `validateMigrationBundle()` checks
+the format/version and required record shapes. `previewMigration()` reports
+duplicate or conflicting IDs, missing collection/question/quiz relationships,
+reference warnings, counts, and any planned remapping. The default
+`skip-existing` policy preserves existing records and skips exact duplicates;
+`replace-existing` is explicit; `remap-conflicts` creates stable suffixed IDs
+and rewrites dependent collection, question, quiz, and session references while
+returning the mapping.
+
+`commitMigration()` validates and previews before opening the independent
+`bqquiz-local` version-3 database. It writes all five quiz stores in one
+read/write IndexedDB transaction. Validation failures occur before writes, and
+transaction errors abort the whole commit. The `scripture-lookup` database is
+never opened by the bridge.
+
+### Test coverage
+
+The new 13-test focused suite covers approved-pack single-verse, multi-verse,
+multiple-citation, study-number, division, range, invalid, missing, and pack
+version behavior. Migration tests cover empty and malformed bundles,
+unsupported versions, conflict preview, missing relationships, stable
+round-trip records, replacement, remapping, and rejected-import coexistence
+with BQ Search packs, settings, and live-score sessions. Existing BQ Search
+search, division, storage, material, and pack behavior remains covered by the
+repository's existing test suite.
+
+### Remaining gaps and risks
+
+- The BQQuiz UI still has no route or visible integration; this is intentional.
+- A future UI must provide a user-facing export/download and preview/commit
+  flow around these pure functions rather than invoking import on startup.
+- The bridge currently targets the documented BQQuiz version-3 store shape and
+  needs a future migration reader if BQQuiz changes its schema.
+- Browser service-worker, route-refresh, and production deployment checks are
+  deferred because no UI or worker changed in Phase 0–1.
+- Conflict remapping is deterministic within a preview but should be surfaced
+  to users and persisted alongside a future import audit record.
+
+### Validation and next stage
+
+The focused compatibility tests and TypeScript check pass. Full repository
+validation is run separately after this report is recorded. The next stage is
+Phase 2: read-only catalog loading and Question Bank/Library adapters, still
+without Generator or Practice UI activation.
