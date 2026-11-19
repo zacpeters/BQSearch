@@ -54,13 +54,7 @@
 }
 
 .quiz-shell .saved-quiz-section {
-  margin-top: 28px;
   scroll-margin-top: 64px;
-}
-
-.quiz-shell .saved-quiz-section h2 {
-  margin: 0 0 10px;
-  font-size: 16px;
 }
 
 @media (max-width: 700px) {

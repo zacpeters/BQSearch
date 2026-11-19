@@ -11,7 +11,7 @@ Replace the BQSearch quiz screens with the active BQQuiz V5 application. Bring o
 | Verification | Read-only source and storage-contract inspection, plus fresh Chromium contexts on both local builds at 1440 px desktop, 810 px iPad portrait, 1080 px iPad landscape, and 390 px phone widths. Walkthrough was dismissed in the integration test context. The comparison used the existing builds and disposable browser data. |
 | Catalog | The approved original JSON and BQSearch source asset match byte for byte. BQ Powers has 25 quizzes and 500 questions. Lift Up has 20 quizzes and 400 questions. Both Question Banks displayed 900 entries. |
 
-> The revised Step 2 decision makes BQSearch the sole application shell. The screen-level findings below describe the audited baseline. The current navigation decision and screenshots are in the [Step 2 review](bqquiz-parity/step-2-shell.md).
+> The revised Step 2 decision makes BQSearch the sole application shell. The screen-level findings below describe the audited baseline. The current navigation decision and screenshots are in the [Step 2 review](bqquiz-parity/step-2-shell.md). The [Step 3 review](bqquiz-parity/step-3-library-bank.md) covers the restored Library and Question Bank, with original and integrated screenshots.
 
 ## Feature-parity matrix
 

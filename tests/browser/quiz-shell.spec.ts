@@ -77,7 +77,7 @@ test('uses unified quiz navigation and theme while preserving host tools and all
   await expect(frame.locator('footer')).toHaveCount(0);
   await expect(frame.getByRole('button', { name: 'Back to Lookup' })).toHaveCount(0);
   await expect(frame.getByRole('button', { name: 'Install local catalog' })).toBeHidden();
-  await expect(frame.locator('.quiz-collection-card')).toHaveCount(2);
+  await expect(frame.locator('.collection-card')).toHaveCount(4);
   const saved = frame.getByRole('region', { name: 'Saved quizzes' });
   await expect(saved.getByText('Saved shell fixture (original)', { exact: true })).toBeVisible();
   await expect(saved.getByText('Saved shell fixture (integration)', { exact: true })).toBeVisible();
@@ -88,11 +88,28 @@ test('uses unified quiz navigation and theme while preserving host tools and all
 
   await page.getByRole('button', { name: 'Use dark mode', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(frame.locator('.quiz-collection-card').first()).toHaveCSS('background-color', 'rgb(29, 32, 36)');
+  await expect(frame.locator('.collection-card').first()).toHaveCSS('background-color', 'rgb(29, 32, 36)');
   await page.screenshot({ path: testInfo.outputPath('shell-dark.png'), animations: 'disabled' });
+  await page.getByRole('button', { name: 'Use light mode', exact: true }).click();
+  const cards = frame.locator('.collection-cards');
+  const gridColumns = page.viewportSize()!.width <= 850 ? 1 : 3;
+  expect(await cards.evaluate(node => getComputedStyle(node).gridTemplateColumns.split(' ').length)).toBe(gridColumns);
+
+  await saved.getByRole('button', { name: /Saved shell fixture \(original\)/ }).click();
+  await expect(frame.getByRole('heading', { name: 'Saved shell fixture (original)' })).toBeVisible();
+  await frame.locator('.quiz-question-card summary').first().click();
+  await expect(frame.locator('.quiz-question-card').first()).toContainText('Synthetic question 2');
+  await frame.getByRole('button', { name: '‹ Collections' }).click();
+  await frame.getByRole('button', { name: /BQ Powers.*25 quizzes/ }).click();
+  await expect(frame.locator('.quiz-row')).toHaveCount(25);
+  await expect(frame.locator('.quiz-row').first()).toContainText('Psalms 3:1–5:12');
+  await page.screenshot({ path: testInfo.outputPath('library-drilldown.png'), animations: 'disabled' });
 
   await nav.getByRole('button', { name: 'Question Bank' }).click();
   await expect(frame.getByText('904 matching', { exact: true })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('question-bank.png'), animations: 'disabled' });
+  await page.getByRole('button', { name: 'Use dark mode', exact: true }).click();
+  await expect(frame.getByRole('button', { name: 'New collection' })).toHaveCSS('color', 'rgb(238, 241, 244)');
   await page.evaluate(() => window.scrollTo(0, 500));
   await expect.poll(() => page.locator('.app-toolbar').evaluate(node => node.getBoundingClientRect().top)).toBe(0);
   await nav.getByRole('button', { name: 'Generate Quiz' }).click();

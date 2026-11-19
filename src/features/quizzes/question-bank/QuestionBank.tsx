@@ -1,34 +1,230 @@
-import { useEffect, useMemo, useState } from 'react';
-import { exportMigrationBundle } from '../../../integration/migration';
-import { normalizeScriptureReference, createPackScriptureProvider } from '../../../integration/scripture-provider';
-import type { Division, ScripturePack } from '../../../types';
-import type { QuizCatalog, QuizCollection, QuizQuestion, UserCollection, UserQuestion } from '../types';
+import { useMemo, useRef, useState } from 'react';
+import type { GeneratedQuiz, QuizCatalog, UserCollection, UserQuestion } from '../types';
+import { displayClassification, formatReference, parseQuestionReferences } from '../v5-format';
 import { parseCsvImport, parseJsonImport, type ImportReport } from './importers';
-import { commitUserContent, deleteUserCollection, deleteUserQuestion, listUserCollections, listUserQuestions, saveUserCollection, saveUserQuestion } from '../storage/user-storage';
+import { commitUserContent, deleteUserCollection, deleteUserQuestion, saveUserCollection, saveUserQuestion } from '../storage/user-storage';
 
-const blank = { collectionId: '', rawQuestion: '', rawAnswer: '', pointValue: '10', classification: '', references: '' };
-export interface QuestionBankProps { catalog: QuizCatalog; userCollections: UserCollection[]; userQuestions: UserQuestion[]; pack: ScripturePack; division: Division; studyStart: number; studyEnd: number; onChanged: () => Promise<void>; }
+type Props = {
+  catalog: QuizCatalog;
+  userQuestions: UserQuestion[];
+  userCollections: UserCollection[];
+  customQuizzes: GeneratedQuiz[];
+  onChanged: () => Promise<void>;
+  onExport: () => void;
+};
+const emptyForm = { collectionId: '', rawQuestion: '', rawAnswer: '', pointValue: '10', classification: '', references: '' };
 
-function formatReference(reference: { book: string; chapter: number; startVerse: number; endVerse?: number }) { return `${reference.book} ${reference.chapter}:${reference.startVerse}${reference.endVerse ? `–${reference.endVerse}` : ''}`; }
-function ReferenceStatus({ reference, pack, division, studyStart, studyEnd }: { reference: QuizQuestion['references'][number]; pack: ScripturePack; division: Division; studyStart: number; studyEnd: number }) { const [status, setStatus] = useState('checking'); useEffect(() => { let active = true; const provider = createPackScriptureProvider(pack, { division, studyStart, studyEnd }); void provider.getVerse(reference).then(result => { if (active) setStatus(result.available ? 'available' : result.reason ?? 'unavailable'); }); return () => { active = false; }; }, [division, pack, reference, studyEnd, studyStart]); let label = formatReference(reference); try { label = formatReference(normalizeScriptureReference(reference)); } catch { return <span className="reference-chip unavailable">{formatReference(reference)} · invalid</span>; } return <span className={`reference-chip ${status === 'available' ? 'available' : status === 'checking' ? 'checking' : 'unavailable'}`}>{label} · {status === 'available' ? 'local' : status === 'checking' ? 'checking' : status}</span>; }
+export function QuestionBankV5({ catalog, userQuestions, userCollections, customQuizzes, onChanged, onExport }: Props) {
+  const [search, setSearch] = useState('');
+  const [collectionId, setCollectionId] = useState('all');
+  const [editing, setEditing] = useState<UserQuestion | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [preview, setPreview] = useState<ImportReport | null>(null);
+  const [message, setMessage] = useState('');
+  const file = useRef<HTMLInputElement>(null);
+  const collections = useMemo(() => [...catalog.collections, ...userCollections], [catalog, userCollections]);
+  const matches = useMemo(() => [
+    ...catalog.questions.map(question => ({ question, userQuestion: undefined })),
+    ...userQuestions.map(question => ({ question, userQuestion: question })),
+  ].filter(({ question }) => {
+    const text = `${question.rawQuestion} ${question.rawAnswer} ${question.references.map(formatReference).join(' ')}`;
+    return (collectionId === 'all' || question.collectionId === collectionId) && text.toLowerCase().includes(search.toLowerCase());
+  }), [catalog.questions, userQuestions, collectionId, search]);
 
-export function QuestionBank({ catalog, userCollections, userQuestions, pack, division, studyStart, studyEnd, onChanged }: QuestionBankProps) {
-  const [search, setSearch] = useState(''); const [collectionId, setCollectionId] = useState('all'); const [publisher, setPublisher] = useState('all'); const [point, setPoint] = useState('all'); const [classification, setClassification] = useState('all'); const [reference, setReference] = useState(''); const [editing, setEditing] = useState<UserQuestion | null>(null); const [form, setForm] = useState(blank); const [report, setReport] = useState<ImportReport | null>(null); const [message, setMessage] = useState(''); const [fileInput, setFileInput] = useState<HTMLInputElement | null>(null);
-  const allQuestions = [...catalog.questions, ...userQuestions]; const allCollections: QuizCollection[] = [...catalog.collections, ...userCollections]; const classifications = [...new Set(allQuestions.map(question => question.classification || 'Direct'))].sort(); const publishers = [...new Set(allCollections.map(collection => collection.publisher))].sort();
-  const matches = useMemo(() => allQuestions.filter(question => { const haystack = `${question.rawQuestion} ${question.rawAnswer} ${question.references.map(formatReference).join(' ')}`.toLowerCase(); return (!search || haystack.includes(search.toLowerCase())) && (collectionId === 'all' || question.collectionId === collectionId) && (publisher === 'all' || allCollections.find(collection => collection.id === question.collectionId)?.publisher === publisher) && (point === 'all' || String(question.pointValue) === point) && (classification === 'all' || (question.classification || 'Direct') === classification) && (!reference || question.references.some(item => formatReference(item).toLowerCase().includes(reference.toLowerCase()))); }), [allCollections, allQuestions, classification, collectionId, point, publisher, reference, search]);
-  const userCollection = (id: string) => userCollections.find(collection => collection.id === id);
-  const beginAdd = () => { setEditing(null); setForm({ ...blank, collectionId: userCollections[0]?.id ?? '' }); };
-  const beginEdit = (question: UserQuestion) => { setEditing(question); setForm({ collectionId: question.collectionId, rawQuestion: question.rawQuestion, rawAnswer: question.rawAnswer, pointValue: String(question.pointValue), classification: question.classification ?? '', references: question.references.map(formatReference).join('; ') }); };
-  const saveQuestion = async () => { const target = userCollection(form.collectionId); const value = Number(form.pointValue); if (!target || !form.rawQuestion.trim() || !form.rawAnswer.trim() || ![10, 20, 30].includes(value)) { setMessage('Choose a user collection and provide question, answer, and valid point value.'); return; } const refs = form.references.split(';').map(item => item.trim()).filter(Boolean).flatMap(item => { try { const match = item.match(/^(.*?)\s+(\d+):(\d+)(?:[-–](\d+))?$/); if (!match) throw new Error(); return [normalizeScriptureReference({ book: match[1], chapter: Number(match[2]), startVerse: Number(match[3]), ...(match[4] ? { endVerse: Number(match[4]) } : {}) })]; } catch { setMessage(`Reference could not be normalized: ${item}`); return []; } }); if (form.references.trim() && !refs.length) return; const existing = editing ?? { id: `user-q-${crypto.randomUUID()}`, collectionId: target.id, quizNumber: 0, originalNumber: userQuestions.filter(question => question.collectionId === target.id).length + 1, pointValue: value as 10 | 20 | 30, rawQuestion: '', rawAnswer: '', references: [], source: { documentId: 'user-created', page: 0, publisher: target.publisher, collection: target.name }, textRevision: 'user-v2' }; await saveUserQuestion({ ...existing, collectionId: target.id, rawQuestion: form.rawQuestion.trim(), rawAnswer: form.rawAnswer.trim(), pointValue: value as 10 | 20 | 30, classification: form.classification.trim() || undefined, references: refs, source: { ...existing.source, publisher: target.publisher, collection: target.name }, textRevision: editing ? `${existing.textRevision}-edit` : 'user-v2' }); setEditing(null); setForm(blank); setMessage('Question saved locally.'); await onChanged(); };
-  const createCollection = async () => { const name = prompt('Collection name')?.trim(); if (!name) return; const publisher = prompt('Publisher/source', 'Personal')?.trim() || 'Personal'; await saveUserCollection({ id: `user-${crypto.randomUUID()}`, publisher, name, sourceFilename: 'user-created', quizIds: [], bundled: false }); setMessage('Collection created locally.'); await onChanged(); };
-  const editCollection = async (collection: UserCollection) => { const name = prompt('Collection name', collection.name)?.trim(); if (!name) return; await saveUserCollection({ ...collection, name }); await onChanged(); };
-  const removeCollection = async (collection: UserCollection) => { if (!confirm(`Delete ${collection.name} and its user questions?`)) return; await deleteUserCollection(collection.id); await onChanged(); };
-  const removeQuestion = async (question: UserQuestion) => { if (!confirm('Delete this user question?')) return; await deleteUserQuestion(question.id); await onChanged(); };
-  const readImport = async (file: File) => { try { const next = file.name.toLowerCase().endsWith('.csv') ? parseCsvImport(await file.text()) : parseJsonImport(JSON.parse(await file.text())); setReport(next); } catch { setReport({ collections: [], questions: [], errors: ['Import file is not valid JSON.'], warnings: [], duplicateIds: [] }); } };
-  const commitImport = async () => { if (!report || report.errors.length || report.duplicateIds.length) return; const existingIds = new Set([...catalog.questions, ...userQuestions].map(question => question.id)); const existingCollectionIds = new Set(allCollections.map(collection => collection.id)); const collections = report.collections.filter(collection => !existingCollectionIds.has(collection.id)); const questions = report.questions.filter(question => !existingIds.has(question.id)); const skippedCollections = report.collections.length - collections.length; const skippedQuestions = report.questions.length - questions.length; await commitUserContent(collections, questions); setReport(null); setMessage(`Imported ${questions.length} user questions and ${collections.length} collections. Skipped ${skippedQuestions} existing question IDs and ${skippedCollections} existing collection IDs; nothing was overwritten.`); await onChanged(); };
-  const exportContent = async () => { const bundle = await exportMigrationBundle({ catalogId: catalog.catalogId, catalogVersion: catalog.catalogVersion }); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' })); link.download = 'bqquiz-user-content.json'; link.click(); URL.revokeObjectURL(link.href); };
-  const importConflicts = report ? { collections: report.collections.filter(item => allCollections.some(existing => existing.id === item.id)).length, questions: report.questions.filter(item => [...catalog.questions, ...userQuestions].some(existing => existing.id === item.id)).length } : { collections: 0, questions: 0 };
-  return <section className="quiz-page"><div className="quiz-page-heading"><div><span className="context-label">QUIZZES · QUESTION BANK</span><h1>Questions</h1><p>{matches.length} matching · published questions are read-only</p></div></div><div className="quiz-actions"><button className="primary-button" onClick={createCollection}>New collection</button><button className="secondary-button compact" onClick={beginAdd}>Add question</button><button className="secondary-button compact" onClick={() => fileInput?.click()}>Import</button><button className="secondary-button compact" onClick={() => void exportContent()}>Export user data</button><input ref={setFileInput} hidden type="file" accept=".csv,.json" onChange={event => { const file = event.target.files?.[0]; if (file) void readImport(file); event.currentTarget.value = ''; }}/></div>{message && <div className="quiz-message" role="status">{message}<button onClick={() => setMessage('')}>Dismiss</button></div>}{userCollections.length > 0 && <div className="user-collection-strip"><strong>My collections</strong>{userCollections.map(collection => <span key={collection.id}>{collection.name}<button onClick={() => void editCollection(collection)}>Edit</button><button onClick={() => void removeCollection(collection)}>Delete</button></span>)}</div>}{(editing || form.collectionId || form.rawQuestion) && <div className="quiz-editor"><div className="quiz-editor-heading"><strong>{editing ? 'Edit user question' : 'Add user question'}</strong><button onClick={() => { setEditing(null); setForm(blank); }}>Cancel</button></div><select aria-label="Question collection" value={form.collectionId} onChange={event => setForm({ ...form, collectionId: event.target.value })}><option value="">Select user collection</option>{userCollections.map(collection => <option key={collection.id} value={collection.id}>{collection.name}</option>)}</select><textarea aria-label="Question text" placeholder="Question text" value={form.rawQuestion} onChange={event => setForm({ ...form, rawQuestion: event.target.value })}/><textarea aria-label="Answer text" placeholder="Answer text" value={form.rawAnswer} onChange={event => setForm({ ...form, rawAnswer: event.target.value })}/><div className="quiz-editor-grid"><select aria-label="Point value" value={form.pointValue} onChange={event => setForm({ ...form, pointValue: event.target.value })}><option value="10">10 points</option><option value="20">20 points</option><option value="30">30 points</option></select><input aria-label="Classification" placeholder="Classification" value={form.classification} onChange={event => setForm({ ...form, classification: event.target.value })}/><input aria-label="Scripture references" placeholder="Psalm 5:8; Psalm 18:20" value={form.references} onChange={event => setForm({ ...form, references: event.target.value })}/></div><button className="primary-button" onClick={() => void saveQuestion()}>Save question</button></div>}{report && <div className="quiz-import-preview"><strong>Import preview</strong><span>{report.collections.length} collections · {report.questions.length} questions</span>{importConflicts.questions + importConflicts.collections > 0 && <span>Existing IDs will be skipped: {importConflicts.questions} questions, {importConflicts.collections} collections. No records will be overwritten.</span>}{report.duplicateIds.length > 0 && <span>Duplicate IDs: {report.duplicateIds.join(', ')}</span>}{report.errors.length > 0 && <pre>{report.errors.join('\n')}</pre>}{report.warnings.length > 0 && <pre>{report.warnings.join('\n')}</pre>}<button className="primary-button" disabled={report.errors.length > 0 || report.duplicateIds.length > 0} onClick={() => void commitImport()}>Commit import</button><button className="secondary-button compact" onClick={() => setReport(null)}>Cancel</button></div>}<div className="quiz-filters"><input aria-label="Search questions" placeholder="Search question or answer" value={search} onChange={event => setSearch(event.target.value)}/><input aria-label="Scripture reference filter" placeholder="Filter Scripture reference" value={reference} onChange={event => setReference(event.target.value)}/><select aria-label="Collection filter" value={collectionId} onChange={event => setCollectionId(event.target.value)}><option value="all">All collections</option>{allCollections.map(collection => <option key={collection.id} value={collection.id}>{collection.publisher} · {collection.name}</option>)}</select><select aria-label="Publisher filter" value={publisher} onChange={event => setPublisher(event.target.value)}><option value="all">All publishers</option>{publishers.map(item => <option key={item}>{item}</option>)}</select><select aria-label="Point value filter" value={point} onChange={event => setPoint(event.target.value)}><option value="all">All point values</option><option value="10">10 points</option><option value="20">20 points</option><option value="30">30 points</option></select><select aria-label="Classification filter" value={classification} onChange={event => setClassification(event.target.value)}><option value="all">All types</option>{classifications.map(item => <option key={item}>{item}</option>)}</select></div><div className="quiz-counts"><span>{matches.length} matching</span><span>{matches.filter(question => question.pointValue === 10).length} ten-point</span><span>{matches.filter(question => question.pointValue === 20).length} twenty-point</span><span>{matches.filter(question => question.pointValue === 30).length} thirty-point</span></div><div className="question-bank-list">{matches.map(question => { const isUser = userQuestions.some(item => item.id === question.id); return <details className="question-bank-item" key={question.id}><summary><span>{String(question.originalNumber || '—').padStart(2, '0')}</span><strong>{question.pointValue} · {question.classification || 'Direct'}</strong><small>{isUser ? 'My question' : question.source.publisher ?? 'Published'} · {question.source.collection ?? ''}</small></summary><div className="question-bank-detail"><p>{question.rawQuestion}</p><p><b>ANS.</b> {question.rawAnswer}</p><div className="reference-list">{question.references.length ? question.references.map((item, index) => <ReferenceStatus key={`${question.id}-${index}`} reference={item} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd}/>) : <span className="reference-chip unavailable">No structured reference</span>}</div><small>Source: {question.source.documentId} · page {question.source.page} · revision {question.textRevision}</small>{isUser && <div className="question-actions"><button onClick={() => beginEdit(question as UserQuestion)}>Edit</button><button onClick={() => void removeQuestion(question as UserQuestion)}>Delete</button></div>}</div></details>; })}</div>{!matches.length && <div className="quiz-empty">No questions match the current filters.</div>}</section>;
+  const write = async (action: () => Promise<void>) => {
+    try { await action(); } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to update quiz data.'); }
+  };
+
+  const closeEditor = () => { setEditing(null); setForm(emptyForm); setEditorOpen(false); };
+  const beginAdd = () => {
+    setEditing(null);
+    setForm({ ...emptyForm, collectionId: userCollections[0]?.id ?? '' });
+    setEditorOpen(true);
+  };
+  const beginEdit = (q: UserQuestion) => {
+    setEditing(q);
+    setForm({ collectionId: q.collectionId, rawQuestion: q.rawQuestion, rawAnswer: q.rawAnswer, pointValue: String(q.pointValue), classification: q.classification ?? '', references: q.references.map(formatReference).join('; ') });
+    setEditorOpen(true);
+  };
+
+  const saveQuestion = () => write(async () => {
+    const rawQuestion = form.rawQuestion.trim();
+    const rawAnswer = form.rawAnswer.trim();
+    const pointValue = Number(form.pointValue) as UserQuestion['pointValue'];
+    const target = userCollections.find(collection => collection.id === form.collectionId);
+    if (!target || !rawQuestion || !rawAnswer || ![10, 20, 30].includes(pointValue)) throw new Error('Choose a user collection and provide a question, answer, and point value.');
+    const references = editing && form.references === editing.references.map(formatReference).join('; ')
+      ? editing.references : parseQuestionReferences(form.references);
+    const original = editing ?? {
+      id: `user-q-${crypto.randomUUID()}`,
+      quizNumber: 0,
+      originalNumber: userQuestions.filter(q => q.collectionId === target.id).length + 1,
+    };
+    await saveUserQuestion({
+      ...original, collectionId: target.id, rawQuestion, rawAnswer, pointValue, references,
+      classification: form.classification.trim() || undefined,
+      source: { ...(editing?.source ?? { documentId: 'user-created', page: 0 }), publisher: target.publisher, collection: target.name },
+      textRevision: editing ? `${editing.textRevision}-edit` : 'user-v1',
+    });
+    closeEditor();
+    setMessage('Question saved locally.');
+    await onChanged();
+  });
+
+  const duplicate = (q: UserQuestion) => write(async () => {
+    await saveUserQuestion({ ...q, id: `user-q-${crypto.randomUUID()}`, originalNumber: userQuestions.length + 1, textRevision: 'user-v1' });
+    await onChanged();
+  });
+
+  const removeQuestion = (q: UserQuestion) => write(async () => {
+    if (!confirm('Delete this user question? Saved practice history remains.')) return;
+    await deleteUserQuestion(q.id);
+    if (editing?.id === q.id) closeEditor();
+    await onChanged();
+  });
+
+  const editCollection = (collection?: UserCollection) => write(async () => {
+    const name = prompt('Collection name', collection?.name)?.trim();
+    if (!name) return;
+    const publisher = prompt('Publisher/source', collection?.publisher ?? 'Personal')?.trim() || collection?.publisher || 'Personal';
+    const defaultYear = collection?.year ?? new Date().getFullYear();
+    const year = Number(prompt('Year', String(defaultYear))) || defaultYear;
+    await saveUserCollection({
+      ...(collection ?? { id: `user-${crypto.randomUUID()}`, sourceFilename: 'user-created', quizIds: [], bundled: false }),
+      name, publisher, year,
+    });
+    await onChanged();
+  });
+
+  const removeCollection = (collection: UserCollection) => write(async () => {
+    const ownedIds = new Set(userQuestions.filter(q => q.collectionId === collection.id).map(q => q.id));
+    const dependent = customQuizzes.filter(quiz => quiz.questionIds.some(id => ownedIds.has(id))).length;
+    const warning = dependent ? `This collection is used by ${dependent} saved quiz${dependent === 1 ? '' : 'zes'}. Delete anyway?`
+      : `Delete ${collection.name} and its ${ownedIds.size} user question${ownedIds.size === 1 ? '' : 's'}? Saved practice history remains.`;
+    if (!confirm(warning)) return;
+    await deleteUserCollection(collection.id);
+    if (form.collectionId === collection.id) closeEditor();
+    if (collectionId === collection.id) setCollectionId('all');
+    await onChanged();
+  });
+
+  const readImport = async (selected: File) => {
+    setPreview(null);
+    setMessage('');
+    try {
+      const text = await selected.text();
+      setPreview(selected.name.toLowerCase().endsWith('.csv') ? parseCsvImport(text) : parseJsonImport(JSON.parse(text)));
+    } catch {
+      setMessage('Unable to read the import file. Choose a valid CSV or JSON file.');
+    }
+  };
+
+  const importPlan = useMemo(() => {
+    if (!preview) return undefined;
+    const reservedIds = new Set(catalog.collections.map(collection => collection.id));
+    const userIds = new Set(userCollections.map(collection => collection.id));
+    const questionIds = new Set([...catalog.questions, ...userQuestions].map(question => question.id));
+    const pendingCollections = preview.collections.filter(collection => !reservedIds.has(collection.id) && !userIds.has(collection.id));
+    const destinationIds = new Set([...userIds, ...pendingCollections.map(collection => collection.id)]);
+    const pendingQuestions = preview.questions.filter(question => !reservedIds.has(question.collectionId) && !questionIds.has(question.id));
+    const unknown = pendingQuestions.filter(question => !destinationIds.has(question.collectionId));
+    return {
+      collections: pendingCollections,
+      questions: pendingQuestions,
+      errors: [...preview.errors, ...unknown.map(question => `Question ${question.id} refers to a missing user collection.`)],
+      skipped: preview.collections.length + preview.questions.length - pendingCollections.length - pendingQuestions.length,
+    };
+  }, [preview, catalog, userCollections, userQuestions]);
+
+  const commitImport = () => write(async () => {
+    if (!importPlan || importPlan.errors.length || preview?.duplicateIds.length) return;
+    await commitUserContent(importPlan.collections, importPlan.questions);
+    setMessage(`Imported ${importPlan.questions.length} user questions and ${importPlan.collections.length} collections.`);
+    setPreview(null);
+    await onChanged();
+  });
+
+  return (
+    <section className="bqquiz-v5 page question-bank-v5">
+      <div className="page-title">
+        <div><span className="overline">QUESTION BANK</span><h1>Questions</h1><p>{matches.length} matching questions</p></div>
+        <div className="bank-actions">
+          <button className="button" onClick={() => void editCollection()}>New collection</button>
+          <button className="button" onClick={beginAdd}>Add question</button>
+          <button className="button" onClick={() => file.current?.click()}>Import</button>
+          <button className="button" onClick={onExport}>Export</button>
+          <input ref={file} hidden type="file" accept=".csv,.json" onChange={e => {
+            const selected = e.target.files?.[0];
+            if (selected) void readImport(selected);
+            e.target.value = '';
+          }}/>
+        </div>
+      </div>
+      <div className="filter-bar">
+        <input aria-label="Search questions" placeholder="Search question, answer, or reference" value={search} onChange={e => setSearch(e.target.value)}/>
+        <select aria-label="Collection filter" value={collectionId} onChange={e => setCollectionId(e.target.value)}>
+          <option value="all">All collections</option>
+          {collections.map(c => <option value={c.id} key={c.id}>{c.publisher} · {c.name}</option>)}
+        </select>
+      </div>
+      {userCollections.length > 0 && <div className="collection-tools">
+        <strong>My collections</strong>
+        {userCollections.map(c => <span key={c.id}>{c.name}
+          <button className="text-button" onClick={() => void editCollection(c)}>Edit</button>
+          <button className="text-button danger" onClick={() => void removeCollection(c)}>Delete</button>
+        </span>)}
+      </div>}
+      {message && <div className="quiz-message" role="status">{message}<button onClick={() => setMessage('')}>Dismiss</button></div>}
+      {editorOpen && <div className="editor-panel">
+        <div className="block-heading"><strong>{editing ? 'Edit question' : 'Add question'}</strong><button className="text-button" onClick={closeEditor}>Cancel</button></div>
+        <select aria-label="Question collection" value={form.collectionId} onChange={e => setForm({ ...form, collectionId: e.target.value })}>
+          <option value="">Select collection</option>
+          {userCollections.map(c => <option value={c.id} key={c.id}>{c.name}</option>)}
+        </select>
+        <textarea aria-label="Question text" placeholder="Question text" value={form.rawQuestion} onChange={e => setForm({ ...form, rawQuestion: e.target.value })}/>
+        <textarea aria-label="Answer text" placeholder="Answer text" value={form.rawAnswer} onChange={e => setForm({ ...form, rawAnswer: e.target.value })}/>
+        <div className="editor-grid">
+          <select aria-label="Point value" value={form.pointValue} onChange={e => setForm({ ...form, pointValue: e.target.value })}>
+            {[10, 20, 30].map(points => <option key={points} value={points}>{points} points</option>)}
+          </select>
+          <input aria-label="Classification" placeholder="Classification" value={form.classification} onChange={e => setForm({ ...form, classification: e.target.value })}/>
+          <input aria-label="Scripture references" placeholder="Psalm 5:8; Psalm 18:20" value={form.references} onChange={e => setForm({ ...form, references: e.target.value })}/>
+        </div>
+        <button className="button primary" onClick={() => void saveQuestion()}>{editing ? 'Save question' : 'Add question'}</button>
+      </div>}
+      {preview && importPlan && <div className="import-preview">
+        <strong>Import preview</strong>
+        <span>{preview.collections.length} collections · {preview.questions.length} questions</span>
+        <span>{[10, 20, 30].map(point => `${point}: ${preview.questions.filter(q => q.pointValue === point).length}`).join(' · ')}</span>
+        {importPlan.skipped > 0 && <span>Existing or published IDs will be skipped: {importPlan.skipped}</span>}
+        {preview.duplicateIds.length > 0 && <span>Duplicate IDs: {preview.duplicateIds.join(', ')}</span>}
+        {preview.warnings.length > 0 && <pre>{preview.warnings.join('\n')}</pre>}
+        {importPlan.errors.length > 0 && <pre>{importPlan.errors.join('\n')}</pre>}
+        <button className="button primary" disabled={importPlan.errors.length > 0 || preview.duplicateIds.length > 0} onClick={() => void commitImport()}>Commit import</button>
+        <button className="text-button" onClick={() => setPreview(null)}>Cancel</button>
+      </div>}
+      <div className="counts-strip">
+        <span><b>{matches.length}</b> matching</span>
+        {[10, 20, 30].map(points => <span key={points}><b>{matches.filter(({ question }) => question.pointValue === points).length}</b> {points}-point</span>)}
+      </div>
+      <div className="bank-list">{matches.map(({ question: q, userQuestion }) => <details className="bank-item" key={q.id}>
+        <summary><span className="bank-number">{q.originalNumber || '—'}</span><span>
+          <strong>{q.rawQuestion}</strong>
+          <small>{q.source?.publisher ?? 'Imported'} · {q.collectionId} · {q.pointValue} points</small>
+        </span></summary>
+        <div className="bank-detail">
+          <p><b>Answer</b> {q.rawAnswer}</p>
+          <p><b>References</b> {q.references.length ? q.references.map(formatReference).join(' · ') : 'None'}</p>
+          <p><b>Type</b> {displayClassification(q.classification)}</p>
+          {userQuestion && <div>
+            <button className="text-button" onClick={() => beginEdit(userQuestion)}>Edit</button>
+            <button className="text-button" onClick={() => void duplicate(userQuestion)}>Duplicate</button>
+            <button className="text-button danger" onClick={() => void removeQuestion(userQuestion)}>Delete</button>
+          </div>}
+          <button className="text-button" onClick={() => alert(`${q.rawQuestion}\n\nANS. ${q.rawAnswer}`)}>Preview</button>
+        </div>
+      </details>)}</div>
+    </section>
+  );
 }
-
-export async function loadUserQuestionState() { return { collections: await listUserCollections(), questions: await listUserQuestions() }; }

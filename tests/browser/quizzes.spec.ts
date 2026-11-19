@@ -30,8 +30,7 @@ test.describe('catalog fallback', () => {
 
 test('opens the public Library, Question Bank and Generator on a fresh visit and offline', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Quizzes' }).click();
-  await expect(page.locator('.quiz-collection-card')).toHaveCount(2);
-  await expect(page.getByText('2 collections · 45 quizzes')).toBeVisible();
+  await expect(page.locator('.collection-card')).toHaveCount(2);
   const powers = page.getByRole('button', { name: /BQ Powers.*25 quizzes.*500 questions/ });
   const liftUp = page.getByRole('button', { name: /Lift Up.*20 quizzes.*400 questions/ });
   await expect(liftUp).toBeVisible();
@@ -53,7 +52,7 @@ test('opens the public Library, Question Bank and Generator on a fresh visit and
 
   await page.reload();
   await page.getByRole('button', { name: 'Quizzes' }).click();
-  await expect(page.locator('.quiz-collection-card')).toHaveCount(2);
+  await expect(page.locator('.collection-card')).toHaveCount(2);
   await expect.poll(() => page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
     const cacheNames = await caches.keys();
@@ -65,7 +64,7 @@ test('opens the public Library, Question Bank and Generator on a fresh visit and
   await page.getByRole('button', { name: 'Quizzes' }).click();
   await expect(powers).toBeVisible();
   await expect(liftUp).toBeVisible();
-  await expect(page.locator('.quiz-collection-card')).toHaveCount(2);
+  await expect(page.locator('.collection-card')).toHaveCount(2);
 });
 
 test('installs a local catalog and persists Library/Question Bank state', async ({ page }) => {
@@ -79,12 +78,12 @@ test('installs a local catalog and persists Library/Question Bank state', async 
   await page.getByLabel('Expected catalog SHA-256').clear();
   await file.setInputFiles(fixture);
   await expect(page.getByRole('status')).toContainText('Installed Synthetic local catalog locally');
-  await expect(page.locator('.quiz-collection-card')).toHaveCount(3);
+  await expect(page.locator('.collection-card')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Collections' })).toBeVisible();
   await page.getByRole('button', { name: 'Question Bank' }).click();
   await page.getByLabel('Collection filter').selectOption('synthetic-collection');
   await page.getByLabel('Search questions').fill('second');
-  await page.locator('.question-bank-item').first().locator('summary').click();
+  await page.locator('.bank-item').first().locator('summary').click();
   await expect(page.getByText('Synthetic answer two')).toBeVisible();
   await page.reload();
   await page.getByRole('button', { name: 'Quizzes' }).click();
@@ -94,23 +93,32 @@ test('installs a local catalog and persists Library/Question Bank state', async 
 test('creates a user collection/question and uses the generator controls', async ({ page }) => {
   await page.getByRole('button', { name: 'Quizzes' }).click();
   await page.getByRole('button', { name: 'Question Bank' }).click();
-  page.once('dialog', dialog => dialog.accept('My Collection'));
+  const createAnswers = ['My Collection', 'Personal', '2027'];
+  const createPrompt = (dialog: import('@playwright/test').Dialog) => void dialog.accept(createAnswers.shift());
+  page.on('dialog', createPrompt);
   await page.getByRole('button', { name: 'New collection' }).click();
-  await expect(page.locator('.user-collection-strip span').filter({ hasText: 'My Collection' })).toBeVisible();
+  await expect(page.locator('.collection-tools > span').filter({ hasText: 'My Collection' })).toBeVisible();
+  page.off('dialog', createPrompt);
   await page.getByRole('button', { name: 'Add question' }).click();
   await page.getByLabel('Question collection').selectOption({ label: 'My Collection' });
   await page.getByLabel('Question text').fill('My local question');
   await page.getByLabel('Answer text').fill('My local answer');
-  await page.getByRole('button', { name: 'Save question' }).click();
+  await page.locator('.editor-panel').getByRole('button', { name: 'Add question' }).click();
   await page.getByLabel('Search questions').fill('My local question');
   await expect(page.getByText('1 matching', { exact: true })).toBeVisible();
-  await page.locator('.quiz-page .quiz-actions input[type=file]').setInputFiles(importFixture);
+  await page.locator('.question-bank-v5 .bank-actions input[type=file]').setInputFiles(importFixture);
   await expect(page.getByText('Import preview', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Commit import' }).click();
   await expect(page.getByText(/Imported 1 user questions/)).toBeVisible();
   const download = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Export user data' }).click();
-  await expect(download).resolves.toBeTruthy();
+  await page.getByRole('button', { name: 'Export', exact: true }).click();
+  const exported = await download;
+  const exportPath = await exported.path();
+  expect(JSON.parse(readFileSync(exportPath, 'utf8'))).toMatchObject({
+    schemaVersion: 1,
+    collections: expect.arrayContaining([expect.objectContaining({ name: 'My Collection' })]),
+    questions: expect.arrayContaining([expect.objectContaining({ rawQuestion: 'My local question' })]),
+  });
   await page.getByRole('button', { name: 'Generate Quiz' }).click();
   await expect(page.getByRole('heading', { name: 'Generate quiz' })).toBeVisible();
   await expect(page.getByLabel('Start Verse')).toBeVisible();
@@ -163,8 +171,7 @@ test('upgrades overlapping published data while preserving installed catalogs', 
     } finally { db.close(); }
   }, [old, { ...synthetic, catalogId: synthetic.sourceSet.id, catalogVersion: 'local-version', installedAt: '2026-01-02T00:00:00Z' }]);
   await page.getByRole('button', { name: 'Quizzes' }).click();
-  await expect(page.locator('.quiz-collection-card')).toHaveCount(3);
-  await expect(page.getByText('3 collections · 46 quizzes')).toBeVisible();
+  await expect(page.locator('.collection-card')).toHaveCount(3);
   await page.getByRole('button', { name: 'Question Bank' }).click();
   await expect(page.getByText('903 matching', { exact: true })).toBeVisible();
   await page.getByLabel('Search questions').fill('Locally installed older wording');
@@ -180,4 +187,58 @@ test('upgrades overlapping published data while preserving installed catalogs', 
     request.onerror = () => reject(request.error);
   }), old.catalogId);
   expect(legacyCatalog).toEqual(old);
+});
+
+test('keeps V5 user edits separate from the published catalog and skips conflicting imports', async ({ page }) => {
+  await page.getByRole('button', { name: 'Quizzes' }).click();
+  await page.getByRole('button', { name: 'Question Bank' }).click();
+  const bank = page.locator('.question-bank-v5');
+  const published = approved.questions[0];
+  const publishedRow = bank.locator('.bank-item').filter({ hasText: published.rawQuestion }).first();
+  await publishedRow.locator('summary').click();
+  await expect(publishedRow.getByText(published.rawAnswer, { exact: false })).toBeVisible();
+  await expect(publishedRow.getByRole('button', { name: 'Edit' })).toHaveCount(0);
+  const collection = { id: 'v5-custom', name: 'V5 source collection', publisher: 'Synthetic source', year: 2027 };
+  const question = { id: 'v5-custom-1', collectionId: collection.id, rawQuestion: 'V5 custom question', rawAnswer: 'V5 original answer', pointValue: 20, references: [{ book: 'Psalms', chapter: 3, startVerse: 1 }] };
+  const upload = (value: unknown) => bank.locator('input[type=file]').setInputFiles({ name: 'v5-fixture.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(value)) });
+  await upload({ schemaVersion: 1, collections: [collection, approved.collections[0]], questions: [question, { ...question, id: 'reserved-v5', collectionId: published.collectionId }] });
+  await expect(bank.getByText('Existing or published IDs will be skipped: 2')).toBeVisible();
+  await bank.getByRole('button', { name: 'Commit import' }).click();
+  await expect(bank.getByText('Imported 1 user questions and 1 collections.')).toBeVisible();
+  const collectionTools = bank.locator('.collection-tools > span').filter({ hasText: collection.name });
+  const editAnswers = ['V5 edited collection', 'Synthetic edited publisher', '2028'];
+  const collectionPrompt = (dialog: import('@playwright/test').Dialog) => void dialog.accept(editAnswers.shift());
+  page.on('dialog', collectionPrompt);
+  await collectionTools.getByRole('button', { name: 'Edit' }).click();
+  await expect(bank.locator('.collection-tools > span').filter({ hasText: 'V5 edited collection' })).toBeVisible();
+  page.off('dialog', collectionPrompt);
+
+  await bank.getByLabel('Collection filter').selectOption(collection.id);
+  const row = bank.locator('.bank-item').filter({ hasText: question.rawQuestion });
+  await row.locator('summary').click();
+  await row.getByRole('button', { name: 'Edit' }).click();
+  await bank.getByLabel('Answer text').fill('V5 edited answer');
+  await bank.getByLabel('Scripture references').fill('Psalm 3:1–2');
+  await bank.getByRole('button', { name: 'Save question' }).click();
+  await expect(row.getByText('V5 edited answer', { exact: false })).toBeVisible();
+  await expect(row.getByText('Psalms 3:1–2', { exact: false })).toBeVisible();
+  await row.getByRole('button', { name: 'Duplicate' }).click();
+  await expect(row).toHaveCount(2);
+
+  const download = page.waitForEvent('download');
+  await bank.getByRole('button', { name: 'Export', exact: true }).click();
+  const exported = JSON.parse(readFileSync(await (await download).path(), 'utf8'));
+  expect(exported.collections).toEqual([expect.objectContaining({ id: collection.id, name: 'V5 edited collection', year: 2028 })]);
+  expect(exported.questions).toHaveLength(2);
+  expect(exported.questions).toContainEqual(expect.objectContaining({ id: question.id, rawAnswer: 'V5 edited answer' }));
+
+  await upload({ schemaVersion: 1, collections: [collection], questions: [question] });
+  await expect(bank.getByText('Existing or published IDs will be skipped: 2')).toBeVisible();
+  await bank.getByRole('button', { name: 'Commit import' }).click();
+  await expect(bank.getByText('Imported 0 user questions and 0 collections.')).toBeVisible();
+  await expect(row).toHaveCount(2);
+  page.once('dialog', dialog => dialog.accept());
+  await bank.locator('.collection-tools > span').filter({ hasText: 'V5 edited collection' }).getByRole('button', { name: 'Delete' }).click();
+  await expect(row).toHaveCount(0);
+  await expect(bank.locator('.bank-item')).toHaveCount(900);
 });

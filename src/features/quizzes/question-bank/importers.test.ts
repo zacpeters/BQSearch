@@ -21,4 +21,11 @@ describe('question-bank imports', () => {
     expect(report.questions[0].rawQuestion).toBe('Question, with "quoted" words');
     expect(report.questions[0].rawAnswer).toBe('First line\nsecond line');
   });
+
+  it('keeps the original V5 CSV fields and accepts the older references header', () => {
+    const report = parseCsvImport('external id,collection,question,answer,pointValue,references,year,answer parts\nq,Local,Question,Answer,30,Ps 3:1–2,2027,First|Second');
+    expect(report.errors).toEqual([]);
+    expect(report.collections[0]).toMatchObject({ year: 2027, bundled: false });
+    expect(report.questions[0]).toMatchObject({ id: 'q', pointValue: 30, answerParts: ['First', 'Second'], references: [{ book: 'Psalms', chapter: 3, startVerse: 1, endVerse: 2 }] });
+  });
 });

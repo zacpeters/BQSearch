@@ -14,3 +14,4 @@ export interface GenerationFilters { collectionIds: string[]; publisherIds: stri
 export interface GeneratedQuiz { id: string; title: string; createdAt: string; updatedAt: string; questionIds: string[]; seed: number; filters: GenerationFilters; totalPoints: number; catalogId: string; catalogVersion: string; }
 export interface CoveragePreset { id: string; name: string; range: CoverageSelection; seasonId: string; division: string; packId: string; catalogId: string; updatedAt: string; }
 export interface StudyOption { studyNumber: number; reference: QuizReference; verseId: string; }
+export interface QuizPracticeSession { id: string; quizId: string; updatedAt: string; }

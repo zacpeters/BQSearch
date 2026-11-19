@@ -5,13 +5,17 @@ import { loadBundledCatalog } from './catalog/bundled';
 import { combineCatalogs } from './catalog/combine';
 import { listCatalogs, saveCatalog } from './catalog/storage';
 import { readCatalogFile } from './catalog/loader';
-import { QuizLibrary } from './library/QuizLibrary';
-import { loadUserQuestionState, QuestionBank } from './question-bank/QuestionBank';
+import { LibraryV5 } from './library/QuizLibrary';
+import { QuestionBankV5 } from './question-bank/QuestionBank';
 import { QuizGenerator } from './generator/QuizGenerator';
 import { GeneratedQuizList } from './generator/GeneratedQuizList';
 import { listGeneratedQuizzes } from './storage/generator-storage';
-import type { GeneratedQuiz, QuizCatalog, UserCollection, UserQuestion } from './types';
+import { listQuizSessions, listUserCollections, listUserQuestions } from './storage/user-storage';
+import { exportMigrationBundle } from '../../integration/migration';
+import { downloadQuizData } from './v5-format';
+import type { GeneratedQuiz, QuizCatalog, QuizPracticeSession, UserCollection, UserQuestion } from './types';
 import './quiz-navigation.css';
+import './v5-library-bank.css';
 
 const tabs = [
   ['library', 'Library'],
@@ -29,6 +33,7 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
   const [userCollections, setUserCollections] = useState<UserCollection[]>([]);
   const [userQuestions, setUserQuestions] = useState<UserQuestion[]>([]);
   const [generatedQuizzes, setGeneratedQuizzes] = useState<GeneratedQuiz[]>([]);
+  const [sessions, setSessions] = useState<QuizPracticeSession[]>([]);
   const [loadMessage, setLoadMessage] = useState('');
   const [importMessage, setImportMessage] = useState('');
   const [expectedDigest, setExpectedDigest] = useState('');
@@ -37,11 +42,21 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
   const savedSection = useRef<HTMLElement>(null);
   const focusSavedAfterNavigation = useRef(false);
   const catalog = useMemo(() => combineCatalogs(bundled, installed), [bundled, installed]);
+  const v5Content = useMemo(() => {
+    const publishedCollections = new Set(catalog?.collections.map(collection => collection.id));
+    const publishedQuestions = new Set(catalog?.questions.map(question => question.id));
+    const collections = userCollections.filter(collection => !publishedCollections.has(collection.id));
+    const questions = userQuestions.filter(question => !publishedCollections.has(question.collectionId) && !publishedQuestions.has(question.id));
+    const published = catalog?.questions ?? [];
+    const userQuestionIds = new Set(userQuestions.map(question => question.id));
+    const savedQuestions = [...published.filter(question => !userQuestionIds.has(question.id)), ...userQuestions.filter(question => !publishedQuestions.has(question.id))];
+    return { collections, questions, savedQuestions, allCollections: [...(catalog?.collections ?? []), ...collections], allQuestions: [...published, ...questions] };
+  }, [catalog, userCollections, userQuestions]);
 
   const refreshUserData = async () => {
-    const [users, saved] = await Promise.all([loadUserQuestionState(), listGeneratedQuizzes()]);
-    setUserCollections(users.collections);
-    setUserQuestions(users.questions);
+    const [collections, questions, saved] = await Promise.all([listUserCollections(), listUserQuestions(), listGeneratedQuizzes()]);
+    setUserCollections(collections);
+    setUserQuestions(questions);
     setGeneratedQuizzes(saved);
   };
 
@@ -50,9 +65,10 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
       loadBundledCatalog().then(setBundled),
       listCatalogs().then(setInstalled),
       refreshUserData(),
-    ]).then(([published, local, user]) => {
+      listQuizSessions().then(setSessions),
+    ]).then(([published, local, user, history]) => {
       if (published.status === 'rejected') setLoadMessage('Unable to load the bundled quiz catalog. Reopen Quizzes to retry.');
-      if (local.status === 'rejected' || user.status === 'rejected') setLoadMessage('Unable to load some local quiz data. Reopen Quizzes to retry.');
+      if (local.status === 'rejected' || user.status === 'rejected' || history.status === 'rejected') setLoadMessage('Unable to load some local quiz data. Reopen Quizzes to retry.');
       setLoading(false);
     });
   }, []);
@@ -83,6 +99,24 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
     }
   };
 
+  const exportUserData = async () => {
+    try {
+      const [collections, questions] = await Promise.all([listUserCollections(), listUserQuestions()]);
+      downloadQuizData('bqquiz-user-content.json', { schemaVersion: 1, collections, questions });
+    } catch {
+      setLoadMessage('Unable to export user collections and questions.');
+    }
+  };
+
+  const exportBackup = async () => {
+    try {
+      const bundle = await exportMigrationBundle({ catalogId: catalog?.catalogId, catalogVersion: catalog?.catalogVersion });
+      downloadQuizData('bqquiz-user-backup.json', bundle);
+    } catch {
+      setImportMessage('Unable to export the quiz backup.');
+    }
+  };
+
   if (loading) return <div className="loading" role="status">Loading quiz catalogs…</div>;
 
   return (
@@ -104,6 +138,7 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
             <div className="quiz-actions">
               <input className="digest-input" aria-label="Expected catalog SHA-256" placeholder="Optional trusted SHA-256 digest" value={expectedDigest} onChange={event => setExpectedDigest(event.target.value)}/>
               <button className="secondary-button compact" disabled={importing} onClick={() => input.current?.click()}>Install local catalog</button>
+              <button className="secondary-button compact" onClick={() => void exportBackup()}>Export five-store backup</button>
               <input ref={input} hidden type="file" accept=".json" onChange={event => {
                 const file = event.target.files?.[0];
                 if (file) void install(file);
@@ -116,10 +151,10 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
       </div>
       {loadMessage && <div className="quiz-message" role="status">{loadMessage}<button onClick={() => setLoadMessage('')}>Dismiss</button></div>}
       {!catalog && <div className="quiz-empty">No published catalog is available.</div>}
-      {catalog && tab === 'library' && <QuizLibrary catalog={catalog} savedQuizzes={generatedQuizzes.length > 0 && (
-        <GeneratedQuizList quizzes={generatedQuizzes} catalog={catalog} userQuestions={userQuestions} onChanged={refreshUserData} sectionRef={savedSection}/>
+      {catalog && tab === 'library' && <LibraryV5 collections={v5Content.allCollections} quizzes={catalog.quizzes} questions={v5Content.allQuestions} savedQuestions={v5Content.savedQuestions} sessions={sessions} renderSavedQuizzes={onOpen => generatedQuizzes.length > 0 && (
+        <GeneratedQuizList quizzes={generatedQuizzes} questions={v5Content.savedQuestions} onOpen={onOpen} onChanged={refreshUserData} sectionRef={savedSection}/>
       )}/>}
-      {catalog && tab === 'bank' && <QuestionBank catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onChanged={refreshUserData}/>}
+      {catalog && tab === 'bank' && <QuestionBankV5 catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} customQuizzes={generatedQuizzes} onChanged={refreshUserData} onExport={() => void exportUserData()}/>}
       {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
         await refreshUserData();
         focusSavedAfterNavigation.current = true;
