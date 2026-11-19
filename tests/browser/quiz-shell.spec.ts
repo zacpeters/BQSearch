@@ -55,7 +55,7 @@ async function hostStyles(page: Page, selector: string) {
   }), selector);
 }
 
-test('shows the original shell geometry and isolates quiz theme, host tools, and stored data', async ({ page }, testInfo) => {
+test('uses unified quiz navigation and theme while preserving host tools and all five stores', async ({ page }, testInfo) => {
   if (testInfo.project.name === 'desktop') await page.setViewportSize({ width: 1440, height: 1000 });
   await page.addInitScript(() => localStorage.setItem('bq-search-walkthrough-v1', 'dismissed'));
   await page.goto('./');
@@ -69,47 +69,47 @@ test('shows the original shell geometry and isolates quiz theme, host tools, and
   const before = await quizStorage(page, fixtures);
 
   await page.getByRole('button', { name: 'Quizzes', exact: true }).click();
-  const frame = page.getByRole('region', { name: 'BQQuiz', exact: true });
-  const header = frame.locator('.app-header');
-  const nav = frame.getByRole('navigation', { name: 'BQQuiz navigation' });
+  const frame = page.getByRole('region', { name: 'Quizzes', exact: true });
+  const nav = frame.getByRole('navigation', { name: 'Quiz sections' });
   await expect(nav.getByRole('button')).toHaveText(['Library', 'Question Bank', 'Generate Quiz']);
-  await expect(nav.getByRole('button', { name: 'Library' })).toHaveAttribute('aria-current', 'page');
+  await expect(nav.getByRole('button', { name: 'Library' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('header')).toHaveCount(1);
+  await expect(frame.locator('footer')).toHaveCount(0);
+  await expect(frame.getByRole('button', { name: 'Back to Lookup' })).toHaveCount(0);
+  await expect(frame.getByRole('button', { name: 'Install local catalog' })).toBeHidden();
   await expect(frame.locator('.quiz-collection-card')).toHaveCount(2);
-  await expect(frame.getByText('2027 selected Psalms · 900 imported questions')).toBeVisible();
-  await expect(header).toHaveCSS('height', '76px');
-  const compact = page.viewportSize()!.width <= 850;
-  await expect(header).toHaveCSS('padding-left', compact ? '18px' : '40px');
-  await expect(header).toHaveCSS('column-gap', compact ? '15px' : '42px');
-  await expect(header.locator('.status-chip')).toHaveCSS('display', compact ? 'none' : 'block');
+  const saved = frame.getByRole('region', { name: 'Saved quizzes' });
+  await expect(saved.getByText('Saved shell fixture (original)', { exact: true })).toBeVisible();
+  await expect(saved.getByText('Saved shell fixture (integration)', { exact: true })).toBeVisible();
+  await expect(saved).not.toContainText('undefined');
+  if (page.viewportSize()!.width <= 700) await expect(nav.getByRole('button').first()).toHaveCSS('min-height', '36px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => innerWidth));
   await page.screenshot({ path: testInfo.outputPath('shell-light.png'), animations: 'disabled' });
 
-  const theme = frame.getByRole('button', { name: 'Toggle dark mode' });
-  await theme.click();
-  await expect(theme).toHaveAttribute('aria-pressed', 'true');
-  await expect(frame).toHaveCSS('background-color', 'rgb(22, 26, 31)');
-  await expect(frame.locator('.quiz-collection-card').first()).toHaveCSS('background-color', 'rgb(32, 37, 43)');
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.getByRole('button', { name: 'Use dark mode', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(frame.locator('.quiz-collection-card').first()).toHaveCSS('background-color', 'rgb(29, 32, 36)');
   await page.screenshot({ path: testInfo.outputPath('shell-dark.png'), animations: 'disabled' });
 
-  await frame.getByRole('button', { name: 'Saved Quizzes', exact: true }).click();
-  await expect(frame.getByText('Saved shell fixture (original)', { exact: true })).toBeVisible();
-  await expect(frame.getByText('Saved shell fixture (integration)', { exact: true })).toBeVisible();
   await nav.getByRole('button', { name: 'Question Bank' }).click();
   await expect(frame.getByText('904 matching', { exact: true })).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 500));
-  await expect.poll(() => header.evaluate(node => node.getBoundingClientRect().top)).toBe(52);
+  await expect.poll(() => page.locator('.app-toolbar').evaluate(node => node.getBoundingClientRect().top)).toBe(0);
   await nav.getByRole('button', { name: 'Generate Quiz' }).click();
   await expect(frame.getByRole('heading', { name: 'Generate quiz', exact: true })).toBeVisible();
-  await frame.getByRole('button', { name: 'BQQuiz Library' }).click();
+  await nav.getByRole('button', { name: 'Library' }).click();
   await expect(frame.getByRole('heading', { name: 'Collections' })).toBeVisible();
   expect(await quizStorage(page)).toEqual(before);
 
   await page.getByRole('button', { name: 'Go to BQ Search lookup' }).click();
   await expect(lookup).toHaveValue('Psalm 3:1');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.getByRole('button', { name: 'Use light mode', exact: true }).click();
   expect(await hostStyles(page, '.search-line')).toEqual(lookupStyles);
   await expect(frame).toHaveCount(0);
   await page.getByRole('button', { name: 'Score Sheet' }).click();
   await expect(page.getByRole('textbox', { name: 'red team name' })).toHaveValue('Synthetic shell test team');
   expect(await hostStyles(page, '.scorer-view')).toEqual(scoreStyles);
+  await page.reload();
+  expect(await quizStorage(page)).toEqual(before);
 });

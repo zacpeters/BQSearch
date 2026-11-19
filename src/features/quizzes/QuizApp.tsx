@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Ellipsis } from 'lucide-react';
 import type { Division, ScripturePack } from '../../types';
 import { loadBundledCatalog } from './catalog/bundled';
 import { combineCatalogs } from './catalog/combine';
@@ -10,9 +11,17 @@ import { QuizGenerator } from './generator/QuizGenerator';
 import { GeneratedQuizList } from './generator/GeneratedQuizList';
 import { listGeneratedQuizzes } from './storage/generator-storage';
 import type { GeneratedQuiz, QuizCatalog, UserCollection, UserQuestion } from './types';
-import { BQQuizFrame, type QuizTab } from './BQQuizFrame';
+import './quiz-navigation.css';
 
-export default function QuizApp({ pack, division, studyStart, studyEnd, onBack }: { pack: ScripturePack; division: Division; studyStart: number; studyEnd: number; onBack: () => void }) {
+const tabs = [
+  ['library', 'Library'],
+  ['bank', 'Question Bank'],
+  ['generator', 'Generate Quiz'],
+] as const;
+
+type QuizTab = (typeof tabs)[number][0];
+
+export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack: ScripturePack; division: Division; studyStart: number; studyEnd: number }) {
   const [bundled, setBundled] = useState<QuizCatalog>();
   const [installed, setInstalled] = useState<QuizCatalog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +34,8 @@ export default function QuizApp({ pack, division, studyStart, studyEnd, onBack }
   const [expectedDigest, setExpectedDigest] = useState('');
   const [importing, setImporting] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const savedSection = useRef<HTMLElement>(null);
+  const focusSavedAfterNavigation = useRef(false);
   const catalog = useMemo(() => combineCatalogs(bundled, installed), [bundled, installed]);
 
   const refreshUserData = async () => {
@@ -45,6 +56,13 @@ export default function QuizApp({ pack, division, studyStart, studyEnd, onBack }
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (tab !== 'library' || !focusSavedAfterNavigation.current) return;
+    focusSavedAfterNavigation.current = false;
+    savedSection.current?.focus({ preventScroll: true });
+    savedSection.current?.scrollIntoView({ block: 'nearest' });
+  }, [tab]);
 
   const install = async (file: File) => {
     setImporting(true);
@@ -67,33 +85,46 @@ export default function QuizApp({ pack, division, studyStart, studyEnd, onBack }
 
   if (loading) return <div className="loading" role="status">Loading quiz catalogs…</div>;
 
-  const sourceCatalog = bundled ?? catalog;
   return (
-    <BQQuizFrame tab={tab} onTab={setTab} hasCatalog={Boolean(catalog)} questionCount={sourceCatalog?.questions.length ?? 0} sourceStatus={sourceCatalog?.sourceSet.status}>
-      <div className="quiz-shell">
-        {loadMessage && <div className="quiz-message" role="status">{loadMessage}<button onClick={() => setLoadMessage('')}>Dismiss</button></div>}
-        {!catalog && <div className="quiz-empty">No published catalog is available.</div>}
-        {catalog && tab === 'library' && <button className="quiz-link" onClick={() => setTab('saved')}>Saved Quizzes</button>}
-        {catalog && tab === 'library' && <QuizLibrary catalog={catalog} onBack={onBack}/>}
-        {catalog && tab === 'bank' && <QuestionBank catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onChanged={refreshUserData} onBack={onBack}/>}
-        {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => { await refreshUserData(); setTab('saved'); }} onBack={onBack}/>}
-        {catalog && tab === 'saved' && <GeneratedQuizList quizzes={generatedQuizzes} catalog={catalog} userQuestions={userQuestions} onChanged={refreshUserData} onBack={onBack}/>}
-        <details className="quiz-editor">
-          <summary>Advanced catalog options</summary>
-          {catalog && <small>{catalog.sourceSet.title} · {catalog.catalogVersion} · {bundled ? 'bundled' : 'local'} · SHA-256 {catalog.catalogDigest ?? 'unavailable'}</small>}
-          <p>Install a reviewed JSON catalog in this browser. Collections in the bundled catalog take precedence when IDs match.</p>
-          <div className="quiz-actions">
-            <input className="digest-input" aria-label="Expected catalog SHA-256" placeholder="Optional trusted SHA-256 digest" value={expectedDigest} onChange={event => setExpectedDigest(event.target.value)}/>
-            <button className="secondary-button compact" disabled={importing} onClick={() => input.current?.click()}>Install local catalog</button>
-            <input ref={input} hidden type="file" accept=".json" onChange={event => {
-              const file = event.target.files?.[0];
-              if (file) void install(file);
-              event.currentTarget.value = '';
-            }}/>
+    <section className="quiz-shell" aria-label="Quizzes">
+      <div className="quiz-context">
+        {catalog && <nav className="search-assist" aria-label="Quiz sections">
+          {tabs.map(([id, label]) => (
+            <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}</button>
+          ))}
+        </nav>}
+        <details className="quiz-catalog-options">
+          <summary className="icon-button" aria-label="Advanced catalog options" title="Advanced catalog options">
+            <Ellipsis size={16} aria-hidden="true"/>
+            {!catalog && 'Advanced catalog options'}
+          </summary>
+          <div className="quiz-editor quiz-catalog-panel">
+            {catalog && <small>{catalog.sourceSet.title} · {catalog.catalogVersion} · {bundled ? 'bundled' : 'local'} · SHA-256 {catalog.catalogDigest ?? 'unavailable'}</small>}
+            <p>Install a reviewed JSON catalog in this browser. Collections in the bundled catalog take precedence when IDs match.</p>
+            <div className="quiz-actions">
+              <input className="digest-input" aria-label="Expected catalog SHA-256" placeholder="Optional trusted SHA-256 digest" value={expectedDigest} onChange={event => setExpectedDigest(event.target.value)}/>
+              <button className="secondary-button compact" disabled={importing} onClick={() => input.current?.click()}>Install local catalog</button>
+              <input ref={input} hidden type="file" accept=".json" onChange={event => {
+                const file = event.target.files?.[0];
+                if (file) void install(file);
+                event.currentTarget.value = '';
+              }}/>
+            </div>
+            {importMessage && <div className="quiz-message" role="status">{importMessage}</div>}
           </div>
-          {importMessage && <div className="quiz-message" role="status">{importMessage}</div>}
         </details>
       </div>
-    </BQQuizFrame>
+      {loadMessage && <div className="quiz-message" role="status">{loadMessage}<button onClick={() => setLoadMessage('')}>Dismiss</button></div>}
+      {!catalog && <div className="quiz-empty">No published catalog is available.</div>}
+      {catalog && tab === 'library' && <QuizLibrary catalog={catalog} savedQuizzes={generatedQuizzes.length > 0 && (
+        <GeneratedQuizList quizzes={generatedQuizzes} catalog={catalog} userQuestions={userQuestions} onChanged={refreshUserData} sectionRef={savedSection}/>
+      )}/>}
+      {catalog && tab === 'bank' && <QuestionBank catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onChanged={refreshUserData}/>}
+      {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
+        await refreshUserData();
+        focusSavedAfterNavigation.current = true;
+        setTab('library');
+      }}/>}
+    </section>
   );
 }

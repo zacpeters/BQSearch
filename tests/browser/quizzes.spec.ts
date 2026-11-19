@@ -21,10 +21,10 @@ test.describe('catalog fallback', () => {
     await page.route(/\/assets\/bqquiz-2027-[\w-]+\.json$/, route => route.abort());
     await page.getByRole('button', { name: 'Quizzes' }).click();
     await expect(page.getByText('No published catalog is available.')).toBeVisible();
-    await page.getByText('Advanced catalog options', { exact: true }).click();
-    await page.locator('.quiz-shell > details input[type=file]').setInputFiles(fixture);
+    await page.getByLabel('Advanced catalog options', { exact: true }).click();
+    await page.locator('.quiz-catalog-options input[type=file]').setInputFiles(fixture);
     await expect(page.getByRole('button', { name: /Synthetic Collection/ })).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'BQQuiz navigation' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Quiz sections' })).toBeVisible();
   });
 });
 
@@ -70,9 +70,9 @@ test('opens the public Library, Question Bank and Generator on a fresh visit and
 
 test('installs a local catalog and persists Library/Question Bank state', async ({ page }) => {
   await page.getByRole('button', { name: 'Quizzes' }).click();
-  await page.getByText('Advanced catalog options', { exact: true }).click();
+  await page.getByLabel('Advanced catalog options', { exact: true }).click();
   await page.getByRole('button', { name: 'Install local catalog' }).click();
-  const file = page.locator('.quiz-shell > details input[type=file]');
+  const file = page.locator('.quiz-catalog-options input[type=file]');
   await page.getByLabel('Expected catalog SHA-256').fill('0'.repeat(64));
   await file.setInputFiles(fixture);
   await expect(page.getByRole('status')).toContainText('Catalog digest mismatch');
@@ -122,10 +122,10 @@ test('creates a user collection/question and uses the generator controls', async
   await page.locator('.generator-button').click();
   await expect(page.getByText('Preview', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Save generated quiz' }).click();
-  await expect(page.getByRole('heading', { name: 'Saved quizzes' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Saved quizzes' })).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Collections' })).toBeVisible();
   await page.reload();
   await page.getByRole('button', { name: 'Quizzes' }).click();
-  await page.getByRole('button', { name: 'Saved Quizzes' }).click();
   await expect(page.getByRole('heading', { name: 'Saved quizzes' })).toBeVisible();
   await expect(page.getByText('Generated quiz', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Question Bank' }).click();

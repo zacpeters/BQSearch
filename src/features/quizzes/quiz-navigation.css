@@ -1,0 +1,75 @@
+.quiz-shell .quiz-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quiz-shell .quiz-context .search-assist {
+  margin: 0;
+}
+
+.quiz-shell .quiz-catalog-options {
+  position: relative;
+  flex: none;
+  margin-left: auto;
+}
+
+.quiz-shell .quiz-catalog-options summary {
+  list-style: none;
+  gap: 6px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.quiz-shell .quiz-catalog-options summary::-webkit-details-marker {
+  display: none;
+}
+
+.quiz-shell .quiz-catalog-options[open] summary {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.quiz-shell .quiz-catalog-panel {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 1;
+  width: min(420px, calc(100vw - 32px));
+  margin: 4px 0 0;
+  box-shadow: 0 4px 16px #0002;
+  font-size: 12px;
+}
+
+.quiz-shell .quiz-catalog-panel p {
+  margin: 0;
+}
+
+.quiz-shell .quiz-catalog-panel small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.quiz-shell .saved-quiz-section {
+  margin-top: 28px;
+  scroll-margin-top: 64px;
+}
+
+.quiz-shell .saved-quiz-section h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+@media (max-width: 700px) {
+  .quiz-shell .quiz-catalog-options summary {
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .quiz-shell .quiz-catalog-panel {
+    width: min(420px, calc(100vw - 24px));
+  }
+}
