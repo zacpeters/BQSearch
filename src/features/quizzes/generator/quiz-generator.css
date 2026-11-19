@@ -92,15 +92,19 @@
 .quiz-generator .quiz-link:disabled { opacity: .5; cursor: default; }
 
 .quiz-generator .generator-endpoint {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 6px;
   min-width: 0;
 }
 
-.quiz-generator .generator-verse-picker select {
-  width: 5.8rem;
+.quiz-generator .generator-endpoint select {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quiz-generator .generator-verse-picker {
+  display: none;
 }
 
 .quiz-generator .generator-range-fields,

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { packReferenceKey } from '../../../integration/scripture-provider';
-import { parseReferenceQuery } from '../../../search';
 import type { Division, ScripturePack } from '../../../types';
 import { analyzeQuestionPool, DEFAULT_POINT_COUNTS, generateFromPool, generatedQuizFromSelection, POINT_VALUES, questionPublisher, randomSeed, studyOptions, type PointCounts } from '../generator';
 import { listCoveragePresets, saveCoveragePreset, saveGeneratedQuiz } from '../storage/generator-storage';
@@ -39,17 +38,15 @@ const studyLabel = (option: StudyOption) => `#${option.studyNumber} · ${formatR
 const choices = (labels: Iterable<string>) => [...new Set(labels)].sort((a, b) => a.localeCompare(b)).map(label => ({ key: label, label }));
 const selection = (items: Choice[], selected?: string[]) => items.filter(item => !selected || selected.includes(item.key)).map(item => item.key);
 
-function resolveInput(options: StudyOption[], text: string) {
+function resolveStoredOption(options: StudyOption[], text: string) {
   const input = text.trim().toLowerCase();
   if (!input) return undefined;
+  const byId = options.find(item => item.verseId.toLowerCase() === input);
+  if (byId) return byId;
   if (/^#?\d+$/.test(input)) return options.find(item => item.studyNumber === Number(input.replace('#', '')));
   const labeled = options.find(item => input === studyLabel(item).toLowerCase());
   if (labeled) return labeled;
-  const reference = parseReferenceQuery(input.replace(/([a-z])\./g, '$1'));
-  if (!reference || reference.verse === undefined || reference.endVerse !== undefined) return undefined;
-  const matches = options.filter(({ reference: item }) => item.chapter === reference.chapter && item.startVerse === reference.verse
-    && (!reference.book || item.book === reference.book));
-  return matches.length === 1 ? matches[0] : undefined;
+  return undefined;
 }
 
 function loadDraft(key: string): GeneratorDraft | undefined {
@@ -61,25 +58,15 @@ function loadDraft(key: string): GeneratorDraft | undefined {
   }
 }
 
-function VerseEndpoint({ label, options, text, selected, onChange }: {
-  label: string; options: StudyOption[]; text: string; selected?: StudyOption; onChange: (value: string) => void;
+function VerseEndpoint({ label, options, selected, onChange }: {
+  label: string; options: StudyOption[]; selected?: StudyOption; onChange: (value: string) => void;
 }) {
-  return <div className="generator-endpoint">
-    <label className="generator-field"><span>{label}</span>
-      <input value={text} placeholder="Reference or #study number" onChange={event => onChange(event.target.value)}
-        onKeyDown={event => { if (event.key === 'Enter' && selected) onChange(studyLabel(selected)); }}
-        onBlur={() => { if (selected) onChange(studyLabel(selected)); }}/>
-    </label>
-    <div className="generator-field generator-verse-picker">
-      <select aria-label={`Browse ${label.toLowerCase()}`} value="" onChange={event => {
-        const option = options.find(item => item.verseId === event.target.value);
-        if (option) onChange(studyLabel(option));
-      }}>
-        <option value="" disabled>Browse</option>
-        {options.map(option => <option key={option.verseId} value={option.verseId}>{studyLabel(option)}</option>)}
-      </select>
-    </div>
-  </div>;
+  return <label className="generator-field generator-endpoint"><span>{label}</span>
+    <select aria-label={label} value={selected?.verseId ?? ''} onChange={event => onChange(event.target.value)}>
+      <option value="" disabled>Choose a verse</option>
+      {options.map(option => <option key={option.verseId} value={option.verseId}>{studyLabel(option)}</option>)}
+    </select>
+  </label>;
 }
 
 function FilterChoices({ label, options, selected, onChange, query }: {
@@ -124,8 +111,8 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
   const endIndex = options.findIndex(option => option.studyNumber > studyEnd);
   const defaultEnd = options[(endIndex < 0 ? options.length : endIndex) - 1];
   const [endpoints, setEndpoints] = useState(stored?.endpoints ?? {
-    start: defaultStart ? studyLabel(defaultStart) : '',
-    end: defaultEnd ? studyLabel(defaultEnd) : '',
+    start: defaultStart?.verseId ?? '',
+    end: defaultEnd?.verseId ?? '',
   });
   const [restrictCoverage, setRestrictCoverage] = useState(stored?.restrictCoverage ?? true);
   const [title, setTitle] = useState(stored?.title ?? 'Generated quiz');
@@ -157,8 +144,8 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
     void listCoveragePresets().then(setPresets, () => setMessage('Unable to load coverage presets.'));
   }, []);
 
-  const start = useMemo(() => resolveInput(options, endpoints.start), [options, endpoints.start]);
-  const end = useMemo(() => resolveInput(options, endpoints.end), [options, endpoints.end]);
+  const start = useMemo(() => resolveStoredOption(options, endpoints.start), [options, endpoints.start]);
+  const end = useMemo(() => resolveStoredOption(options, endpoints.end), [options, endpoints.end]);
   const range = useMemo(() => start && end && start.studyNumber <= end.studyNumber ? {
     start: start.reference, end: end.reference, startStudyNumber: start.studyNumber, endStudyNumber: end.studyNumber,
   } : undefined, [start, end]);
@@ -260,7 +247,7 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
       const nextStart = find(preset.range.start, preset.range.startStudyNumber);
       const nextEnd = find(preset.range.end, preset.range.endStudyNumber);
       if (!nextStart || !nextEnd || nextStart.studyNumber > nextEnd.studyNumber) throw new Error();
-      setEndpoints({ start: studyLabel(nextStart), end: studyLabel(nextEnd) });
+      setEndpoints({ start: nextStart.verseId, end: nextEnd.verseId });
       setRestrictCoverage(true);
       setPresetId(id);
       setMessage('Coverage preset restored.');
@@ -295,9 +282,9 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
             </label>
             {restrictCoverage ? <>
               <div className="generator-range-fields">
-                <VerseEndpoint label="Start Verse" options={options} text={endpoints.start} selected={start}
+                <VerseEndpoint label="Start Verse" options={options} selected={start}
                   onChange={value => changeEndpoint('start', value)}/>
-                <VerseEndpoint label="End Verse" options={options} text={endpoints.end} selected={end}
+                <VerseEndpoint label="End Verse" options={options} selected={end}
                   onChange={value => changeEndpoint('end', value)}/>
               </div>
               <p className="generator-note">{range ? `${coveredVerses} study ${coveredVerses === 1 ? 'verse' : 'verses'} selected` :

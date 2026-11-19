@@ -50,18 +50,16 @@ test('restores quiz navigation, verse range, and ordered preview through reload 
   const generator = page.getByRole('region', { name: 'Generate quiz' });
   const start = generator.getByLabel('Start Verse', { exact: true });
   const end = generator.getByLabel('End Verse', { exact: true });
-  await start.fill('3:2');
-  await end.fill('Psa. 3.1');
+  await start.selectOption({ label: '#2 · Psalms 3:2' });
+  await end.selectOption({ label: '#1 · Psalms 3:1' });
   await expect(generator.getByText('End Verse must be at or after Start Verse.')).toBeVisible();
-  await generator.getByRole('combobox', { name: 'Browse start verse' }).selectOption({ label: '#1 · Psalms 3:1' });
+  await start.selectOption({ label: '#1 · Psalms 3:1' });
   await expect(generator.getByText('1 study verse selected')).toBeVisible();
-  await generator.getByRole('combobox', { name: 'Browse end verse' }).selectOption({ label: '#429 · Psalms 103:22' });
-  await expect(start).toHaveValue('#1 · Psalms 3:1');
-  await expect(end).toHaveValue('#429 · Psalms 103:22');
-  await start.fill('3.2');
-  await start.press('Enter');
+  await end.selectOption({ label: '#429 · Psalms 103:22' });
+  await expect(start).toHaveValue(/psalms-3-1/);
+  await expect(end).toHaveValue(/psalms-103-22/);
+  await start.selectOption({ label: '#2 · Psalms 3:2' });
   await expect(generator.getByText('428 study verses selected')).toBeVisible();
-  await expect(start).toHaveValue('#2 · Psalms 3:2');
   await generator.getByLabel('Title').fill('History quiz');
   await generator.locator('.generator-button').click();
   const questions = generator.locator('.generator-selection li');
@@ -69,8 +67,8 @@ test('restores quiz navigation, verse range, and ordered preview through reload 
   const orderedPreview = await questions.allTextContents();
 
   await page.reload();
-  await expect(start).toHaveValue('#2 · Psalms 3:2');
-  await expect(end).toHaveValue('#429 · Psalms 103:22');
+  await expect(start).toHaveValue(/psalms-3-2/);
+  await expect(end).toHaveValue(/psalms-103-22/);
   await expect(generator.getByLabel('Title')).toHaveValue('History quiz');
   await expect(questions).toHaveText(orderedPreview.map(question => question.replace(/\s+/g, ' ').trim()));
 
@@ -81,7 +79,7 @@ test('restores quiz navigation, verse range, and ordered preview through reload 
   await page.goForward();
   await expect(page.getByRole('heading', { name: 'Collections', exact: true })).toBeVisible();
   await page.goForward();
-  await expect(start).toHaveValue('#2 · Psalms 3:2');
+  await expect(start).toHaveValue(/psalms-3-2/);
   await expect(questions).toHaveCount(20);
   await generator.getByRole('button', { name: 'Save generated quiz' }).click();
   await page.getByRole('button', { name: /History quiz/ }).click();
@@ -127,14 +125,14 @@ test('filters exact types, restores a preset, and plays the generated quiz in st
   await types.getByRole('button', { name: 'Select all' }).click();
 
   await restrict.check();
-  await generator.getByLabel('Start Verse', { exact: true }).fill('Psalm 3:1');
-  await generator.getByLabel('End Verse', { exact: true }).fill('Psalms 3:2');
+  await generator.getByLabel('Start Verse', { exact: true }).selectOption({ label: '#1 · Psalms 3:1' });
+  await generator.getByLabel('End Verse', { exact: true }).selectOption({ label: '#2 · Psalms 3:2' });
   page.once('dialog', dialog => dialog.accept('Opening Psalms'));
   await generator.getByRole('button', { name: 'Save preset' }).click();
   await expect(generator.getByRole('status')).toContainText('Coverage preset saved');
-  await generator.getByLabel('End Verse', { exact: true }).fill('Psalms 3:3');
+  await generator.getByLabel('End Verse', { exact: true }).selectOption({ label: '#3 · Psalms 3:3' });
   await generator.getByLabel('Coverage preset').selectOption({ label: 'Opening Psalms' });
-  await expect(generator.getByLabel('End Verse', { exact: true })).toHaveValue(/Psalms 3:2$/);
+  await expect(generator.getByLabel('End Verse', { exact: true })).toHaveValue(/psalms-3-2/);
 
   await page.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -172,7 +170,7 @@ test('filters exact types, restores a preset, and plays the generated quiz in st
   await expect(page.getByText(/Imported 2 user questions/)).toBeVisible();
   await page.getByRole('button', { name: 'Generate Quiz', exact: true }).click();
   await generator.getByLabel('Coverage preset').selectOption({ label: 'Standalone V5 range' });
-  await expect(generator.getByLabel('End Verse', { exact: true })).toHaveValue(/Psalms 3:2$/);
+  await expect(generator.getByLabel('End Verse', { exact: true })).toHaveValue(/psalms-3-2/);
   await generator.getByLabel('Title').fill('Generated workflow fixture');
   await collections.getByRole('button', { name: 'Clear all' }).click();
   await collections.getByRole('checkbox', { name: /Synthetic generator · Generator fixture/ }).check();
