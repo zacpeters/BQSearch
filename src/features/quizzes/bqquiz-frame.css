@@ -1,0 +1,226 @@
+/* The host keeps its normal context width. Only the embedded frame spans the workspace. */
+.workspace.bqquiz-host-workspace {
+  --bqquiz-host-context-width: min(900px, calc(100% - 32px));
+  width: 100%;
+}
+
+.bqquiz-host-workspace > :is(.context-bar, .install-notice, .loading) {
+  width: var(--bqquiz-host-context-width);
+  margin-inline: auto;
+}
+
+/* Shell rules from BQQuiz styles.css and the body/theme overrides in styles-phase4b.css. */
+.bqquiz-v5 {
+  --ink: #17181a;
+  --muted: #72767d;
+  --line: #e0e3e6;
+  --panel: #fff;
+  --soft: #f0f2f4;
+  --blue: #396fe2;
+  min-height: 100vh;
+  max-width: 1440px;
+  margin: auto;
+  background: var(--soft);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+.bqquiz-v5[data-bqquiz-theme="dark"] {
+  --ink: #f3f5f7;
+  --muted: #aeb5bd;
+  --line: #343a42;
+  --panel: #20252b;
+  --soft: #161a1f;
+}
+
+/* Map the shell palette onto the current screens until their V5 replacements are ported. */
+.bqquiz-v5 > .quiz-shell {
+  --bg: var(--soft);
+  --surface: var(--panel);
+  --surface-2: var(--soft);
+  --text: var(--ink);
+  --accent: var(--blue);
+  --accent-soft: #e8f0ff;
+  width: var(--bqquiz-host-context-width);
+}
+
+.bqquiz-v5[data-bqquiz-theme="dark"] > .quiz-shell {
+  --surface-2: #2c333b;
+  --accent: #79a9ff;
+  --accent-soft: #263958;
+}
+
+.bqquiz-v5 > .quiz-shell > details small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.bqquiz-v5 > .app-header {
+  position: sticky;
+  top: 52px; /* Stay below BQSearch's sticky toolbar. */
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 42px;
+  height: 76px;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffffeb;
+  backdrop-filter: blur(16px);
+}
+
+.bqquiz-v5 > .app-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--ink);
+}
+
+.bqquiz-v5 > .app-header .brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #17181a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -.08em;
+}
+
+.bqquiz-v5 > .app-header .brand strong {
+  display: block;
+  font-size: 15px;
+  letter-spacing: -.02em;
+}
+
+.bqquiz-v5 > .app-header .brand small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.bqquiz-v5 > .app-header .main-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.bqquiz-v5 > .app-header .main-nav button {
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.bqquiz-v5 > .app-header .main-nav button:is(:hover, .active) {
+  background: #eef0f2;
+  color: var(--ink);
+}
+
+.bqquiz-v5 > .app-header .theme-toggle {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.bqquiz-v5 > .app-header button {
+  cursor: pointer;
+}
+
+.bqquiz-v5 > .app-header button:focus-visible {
+  outline: 2px solid #80a7ff;
+  outline-offset: 2px;
+}
+
+.bqquiz-v5 > .app-header .status-chip {
+  margin-left: auto;
+  color: #68716d;
+  font-size: 12px;
+}
+
+.bqquiz-v5 > .app-header .status-chip i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #35a36f;
+}
+
+.bqquiz-v5 > .app-footer {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px 40px 35px;
+  border-top: 1px solid var(--line);
+  color: #9ba1a7;
+  font-size: 10px;
+}
+
+.bqquiz-v5[data-bqquiz-theme="dark"] > .app-header {
+  background: #161a1fe8;
+}
+
+.bqquiz-v5[data-bqquiz-theme="dark"] > .app-header .brand-mark {
+  background: #f3f5f7;
+  color: #17181a;
+}
+
+.bqquiz-v5[data-bqquiz-theme="dark"] > .app-header .main-nav button:is(:hover, .active) {
+  background: #2c333b;
+  color: var(--ink);
+}
+
+@media (max-width: 850px) {
+  .bqquiz-v5 > .app-header {
+    gap: 15px;
+    padding: 0 18px;
+  }
+
+  .bqquiz-v5 > .app-header .main-nav button {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  .bqquiz-v5 > .app-header .status-chip {
+    display: none;
+  }
+
+  .bqquiz-v5 > .app-footer {
+    display: block;
+    padding: 18px;
+  }
+
+  .bqquiz-v5 > .app-footer span {
+    display: block;
+    margin: 4px 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace.bqquiz-host-workspace {
+    --bqquiz-host-context-width: calc(100% - 24px);
+  }
+}
+
+@media print {
+  .bqquiz-v5 > :is(.app-header, .app-footer) {
+    display: none !important;
+  }
+}

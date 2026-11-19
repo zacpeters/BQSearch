@@ -1,0 +1,289 @@
+{
+  "original": {
+    "userCollections": [
+      {
+        "id": "fixture-original-collection",
+        "publisher": "Synthetic fixture",
+        "name": "Shell fixture (original)",
+        "year": 2027,
+        "sourceFilename": "fixture.json",
+        "quizIds": [],
+        "bundled": false
+      }
+    ],
+    "userQuestions": [
+      {
+        "id": "fixture-original-question-1",
+        "collectionId": "fixture-original-collection",
+        "quizNumber": 0,
+        "originalNumber": 1,
+        "pointValue": 10,
+        "rawQuestion": "Synthetic question 1",
+        "rawAnswer": "Synthetic answer.",
+        "references": [
+          {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 1
+          }
+        ],
+        "source": {
+          "documentId": "fixture",
+          "page": 0,
+          "publisher": "Synthetic fixture",
+          "collection": "Shell fixture (original)"
+        },
+        "textRevision": "fixture-v1"
+      },
+      {
+        "id": "fixture-original-question-2",
+        "collectionId": "fixture-original-collection",
+        "quizNumber": 0,
+        "originalNumber": 2,
+        "pointValue": 20,
+        "rawQuestion": "Synthetic question 2",
+        "rawAnswer": "Synthetic answer.",
+        "references": [
+          {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 2
+          }
+        ],
+        "source": {
+          "documentId": "fixture",
+          "page": 0,
+          "publisher": "Synthetic fixture",
+          "collection": "Shell fixture (original)"
+        },
+        "textRevision": "fixture-v1"
+      }
+    ],
+    "customQuizzes": [
+      {
+        "id": "fixture-original-quiz",
+        "title": "Saved shell fixture (original)",
+        "createdAt": "2026-01-02T03:04:05.000Z",
+        "updatedAt": "2026-01-02T03:04:05.000Z",
+        "questionIds": [
+          "fixture-original-question-2",
+          "fixture-original-question-1"
+        ],
+        "seed": 12,
+        "totalPoints": 30,
+        "filters": {
+          "collectionIds": [
+            "fixture-original-collection"
+          ],
+          "pointCounts": {
+            "10": 1,
+            "20": 1,
+            "30": 0
+          },
+          "classifications": [],
+          "coverage": {
+            "start": {
+              "book": "Psalms",
+              "chapter": 3,
+              "startVerse": 1
+            },
+            "end": {
+              "book": "Psalms",
+              "chapter": 3,
+              "startVerse": 3
+            }
+          },
+          "strategy": "balanced"
+        }
+      }
+    ],
+    "coveragePresets": [
+      {
+        "id": "fixture-original-preset",
+        "name": "Synthetic coverage",
+        "range": {
+          "start": {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 1
+          },
+          "end": {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 3
+          }
+        },
+        "updatedAt": "2026-01-02T03:04:05.000Z"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "fixture-original-session",
+        "quizId": "fixture-original-quiz",
+        "createdAt": "2026-01-02T03:04:05.000Z",
+        "updatedAt": "2026-01-02T03:04:05.000Z",
+        "roster": {
+          "red": 3,
+          "yellow": 3
+        },
+        "attempts": [
+          {
+            "id": "fixture-original-attempt",
+            "questionId": "fixture-original-question-2",
+            "quizzerId": "R1",
+            "team": "red",
+            "sequence": 1,
+            "type": "original",
+            "result": "incorrect",
+            "interrupted": true,
+            "interruption": {
+              "textRevision": "fixture-v1",
+              "wordIndex": 1,
+              "charOffset": 10
+            },
+            "createdAt": "2026-01-02T03:04:05.000Z"
+          }
+        ],
+        "states": {
+          "fixture-original-question-2": "awaiting-reread"
+        }
+      }
+    ]
+  },
+  "integration": {
+    "userCollections": [
+      {
+        "id": "fixture-integration-collection",
+        "publisher": "Synthetic fixture",
+        "name": "Shell fixture (integration)",
+        "year": 2027,
+        "sourceFilename": "fixture.json",
+        "quizIds": [],
+        "bundled": false
+      }
+    ],
+    "userQuestions": [
+      {
+        "id": "fixture-integration-question-1",
+        "collectionId": "fixture-integration-collection",
+        "quizNumber": 0,
+        "originalNumber": 1,
+        "pointValue": 10,
+        "rawQuestion": "Synthetic question 1",
+        "rawAnswer": "Synthetic answer.",
+        "references": [
+          {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 1
+          }
+        ],
+        "source": {
+          "documentId": "fixture",
+          "page": 0,
+          "publisher": "Synthetic fixture",
+          "collection": "Shell fixture (integration)"
+        },
+        "textRevision": "fixture-v1"
+      },
+      {
+        "id": "fixture-integration-question-2",
+        "collectionId": "fixture-integration-collection",
+        "quizNumber": 0,
+        "originalNumber": 2,
+        "pointValue": 20,
+        "rawQuestion": "Synthetic question 2",
+        "rawAnswer": "Synthetic answer.",
+        "references": [
+          {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 2
+          }
+        ],
+        "source": {
+          "documentId": "fixture",
+          "page": 0,
+          "publisher": "Synthetic fixture",
+          "collection": "Shell fixture (integration)"
+        },
+        "textRevision": "fixture-v1"
+      }
+    ],
+    "customQuizzes": [
+      {
+        "id": "fixture-integration-quiz",
+        "title": "Saved shell fixture (integration)",
+        "createdAt": "2026-01-02T03:04:05.000Z",
+        "updatedAt": "2026-01-02T03:04:05.000Z",
+        "questionIds": [
+          "fixture-integration-question-2",
+          "fixture-integration-question-1"
+        ],
+        "seed": 12,
+        "totalPoints": 30,
+        "filters": {
+          "collectionIds": [
+            "fixture-integration-collection"
+          ],
+          "pointCounts": {
+            "10": 1,
+            "20": 1,
+            "30": 0
+          },
+          "classifications": [],
+          "coverage": {
+            "start": {
+              "book": "Psalms",
+              "chapter": 3,
+              "startVerse": 1
+            },
+            "end": {
+              "book": "Psalms",
+              "chapter": 3,
+              "startVerse": 3
+            },
+            "startStudyNumber": 1,
+            "endStudyNumber": 3
+          },
+          "strategy": "balanced",
+          "seasonId": "season-2027",
+          "division": "Intermediate",
+          "packId": "season-2027-v1",
+          "restrictCoverage": true,
+          "publisherIds": [
+            "Synthetic fixture"
+          ]
+        },
+        "catalogId": "fixture-catalog",
+        "catalogVersion": "fixture-v1"
+      }
+    ],
+    "coveragePresets": [
+      {
+        "id": "fixture-integration-preset",
+        "name": "Synthetic coverage",
+        "range": {
+          "start": {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 1
+          },
+          "end": {
+            "book": "Psalms",
+            "chapter": 3,
+            "startVerse": 3
+          },
+          "startStudyNumber": 1,
+          "endStudyNumber": 3
+        },
+        "updatedAt": "2026-01-02T03:04:05.000Z",
+        "seasonId": "season-2027",
+        "division": "Intermediate",
+        "packId": "season-2027-v1",
+        "catalogId": "fixture-catalog"
+      }
+    ],
+    "sessions": []
+  }
+}

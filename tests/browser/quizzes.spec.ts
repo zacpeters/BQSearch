@@ -14,6 +14,20 @@ test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
+test.describe('catalog fallback', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  test('keeps manual catalog installation available when the bundle fails', async ({ page }) => {
+    await page.route(/\/assets\/bqquiz-2027-[\w-]+\.json$/, route => route.abort());
+    await page.getByRole('button', { name: 'Quizzes' }).click();
+    await expect(page.getByText('No published catalog is available.')).toBeVisible();
+    await page.getByText('Advanced catalog options', { exact: true }).click();
+    await page.locator('.quiz-shell > details input[type=file]').setInputFiles(fixture);
+    await expect(page.getByRole('button', { name: /Synthetic Collection/ })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'BQQuiz navigation' })).toBeVisible();
+  });
+});
+
 test('opens the public Library, Question Bank and Generator on a fresh visit and offline', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Quizzes' }).click();
   await expect(page.locator('.quiz-collection-card')).toHaveCount(2);
@@ -118,8 +132,8 @@ test('creates a user collection/question and uses the generator controls', async
   await expect(page.getByLabel('Collection filter').locator('option').filter({ hasText: 'Personal · My Collection' })).toHaveCount(1);
   await page.getByLabel('Search questions').fill('My local question');
   await expect(page.getByText('1 matching', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Lookup', exact: true }).click();
-  await expect(page.getByRole('button', { name: /Go to BQ Search lookup/ })).toBeVisible();
+  await page.getByRole('button', { name: /Go to BQ Search lookup/ }).click();
+  await expect(page.getByRole('textbox', { name: 'Search Scripture' })).toBeVisible();
 });
 
 test('upgrades overlapping published data while preserving installed catalogs', async ({ page }) => {
