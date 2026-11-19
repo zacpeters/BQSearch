@@ -380,6 +380,22 @@
   padding: 0 9px;
 }
 
+.bqquiz-v5 .question-editor-collection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bqquiz-v5 .question-editor-collection select {
+  flex: 1;
+}
+
+.bqquiz-v5 .editor-panel select[multiple] {
+  min-height: 128px;
+  height: auto;
+  padding-block: 6px;
+}
+
 .bqquiz-v5 .editor-grid {
   display: grid;
   grid-template-columns: 120px 1fr 1fr;

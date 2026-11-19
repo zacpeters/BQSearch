@@ -14,6 +14,7 @@ import { listGeneratedQuizzes } from './storage/generator-storage';
 import { listQuizSessions, listUserCollections, listUserQuestions } from './storage/user-storage';
 import { exportMigrationBundle } from '../../integration/migration';
 import { createPackScriptureProvider } from '../../integration/scripture-provider';
+import { studyOptions } from './generator';
 import { PracticeWorkspace } from './practice/PracticeWorkspace';
 import { downloadQuizData } from './v5-format';
 import type { GeneratedQuiz, QuizCatalog, QuizPracticeSession, QuizQuestion, UserCollection, UserQuestion } from './types';
@@ -37,6 +38,7 @@ export default function QuizApp({ pack, division, studyStart, studyEnd, route, o
   const [userCollections, setUserCollections] = useState<UserCollection[]>([]);
   const [userQuestions, setUserQuestions] = useState<UserQuestion[]>([]);
   const [generatedQuizzes, setGeneratedQuizzes] = useState<GeneratedQuiz[]>([]);
+  const [launchedQuiz, setLaunchedQuiz] = useState<GeneratedQuiz>();
   const [sessions, setSessions] = useState<QuizPracticeSession[]>([]);
   const [loadMessage, setLoadMessage] = useState('');
   const [importMessage, setImportMessage] = useState('');
@@ -133,8 +135,8 @@ export default function QuizApp({ pack, division, studyStart, studyEnd, route, o
 
   if (route.practice) {
     const { id, kind } = route.practice;
-    const quiz = kind === 'saved' ? generatedQuizzes.find(item => item.id === id) : catalog?.quizzes.find(item => item.id === id);
-    const index = new Map((kind === 'saved' ? v5Content.savedQuestions : v5Content.allQuestions).map(question => [question.id, question]));
+    const quiz = kind === 'saved' ? generatedQuizzes.find(item => item.id === id) : kind === 'generated' ? launchedQuiz : catalog?.quizzes.find(item => item.id === id);
+    const index = new Map((kind === 'published' ? v5Content.allQuestions : v5Content.savedQuestions).map(question => [question.id, question]));
     const onBack = () => {
       onNavigate({ view: 'quizzes', tab: 'library' });
       window.scrollTo(0, 0);
@@ -185,8 +187,8 @@ export default function QuizApp({ pack, division, studyStart, studyEnd, route, o
       }} renderSavedQuizzes={onOpen => generatedQuizzes.length > 0 && (
         <GeneratedQuizList quizzes={generatedQuizzes} questions={v5Content.savedQuestions} onOpen={onOpen} onChanged={refreshUserData} sectionRef={savedSection}/>
       )}/>}
-      {catalog && tab === 'bank' && <QuestionBankV5 catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} customQuizzes={generatedQuizzes} onChanged={refreshUserData} onExport={() => void exportUserData()}/>}
-      {catalog && tab === 'generator' && <QuizGenerator key={JSON.stringify([pack.id, pack.version, division, studyStart, studyEnd])} catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
+      {catalog && tab === 'bank' && <QuestionBankV5 catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} customQuizzes={generatedQuizzes} referenceOptions={studyOptions(pack, division)} onChanged={refreshUserData} onExport={() => void exportUserData()}/>}
+      {catalog && tab === 'generator' && <QuizGenerator key={JSON.stringify([pack.id, pack.version, division, studyStart, studyEnd])} catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onLaunch={quiz => { setLaunchedQuiz(quiz); onNavigate({ view: 'quizzes', tab: 'generator', practice: { id: quiz.id, kind: 'generated' } }); }} onSaved={async () => {
         await refreshUserData();
         const current = readRoute(new URL(window.location.href), true);
         if (current.view !== 'quizzes' || current.tab !== 'generator') return;

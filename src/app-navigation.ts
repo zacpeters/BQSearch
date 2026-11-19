@@ -5,7 +5,7 @@ export type QuizRoute = {
   view: 'quizzes';
   tab: QuizTab;
   collectionId?: string;
-  practice?: { kind: 'published' | 'saved'; id: string };
+  practice?: { kind: 'published' | 'saved' | 'generated'; id: string };
 };
 type Route = QuizRoute | { view: 'search' | 'settings' | 'scorer' };
 
@@ -19,7 +19,7 @@ export function readRoute(url: URL, quizzesEnabled: boolean): Route {
   const collectionId = url.searchParams.get('collection') || undefined;
   const id = url.searchParams.get('quiz');
   const kind = url.searchParams.get('quizKind');
-  return { view, tab, collectionId, practice: id && (kind === 'published' || kind === 'saved') ? { id, kind } : undefined };
+  return { view, tab, collectionId, practice: id && (kind === 'published' || kind === 'saved' || kind === 'generated') ? { id, kind } : undefined };
 }
 
 export function useAppNavigation(quizzesEnabled: boolean) {

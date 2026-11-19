@@ -3,7 +3,7 @@ import { packReferenceKey } from '../../../integration/scripture-provider';
 import type { Division, ScripturePack } from '../../../types';
 import { analyzeQuestionPool, DEFAULT_POINT_COUNTS, generateFromPool, generatedQuizFromSelection, POINT_VALUES, questionPublisher, randomSeed, studyOptions, type PointCounts } from '../generator';
 import { listCoveragePresets, saveCoveragePreset, saveGeneratedQuiz } from '../storage/generator-storage';
-import type { CoveragePreset, GenerationFilters, GenerationStrategy, QuizCatalog, QuizQuestion, StudyOption, UserCollection, UserQuestion } from '../types';
+import type { CoveragePreset, GeneratedQuiz, GenerationFilters, GenerationStrategy, QuizCatalog, QuizQuestion, StudyOption, UserCollection, UserQuestion } from '../types';
 import { formatReference } from '../v5-format';
 import { classificationKey, classificationLabel } from './classifications';
 import './quiz-generator.css';
@@ -17,6 +17,7 @@ type Props = {
   studyStart: number;
   studyEnd: number;
   onSaved: () => Promise<void>;
+  onLaunch: (quiz: GeneratedQuiz) => void;
 };
 
 type Choice = { key: string; label: string };
@@ -96,7 +97,7 @@ function FilterChoices({ label, options, selected, onChange, query }: {
   );
 }
 
-export function QuizGenerator({ catalog, userCollections, userQuestions, pack, division, studyStart, studyEnd, onSaved }: Props) {
+export function QuizGenerator({ catalog, userCollections, userQuestions, pack, division, studyStart, studyEnd, onSaved, onLaunch }: Props) {
   const questions = useMemo(() => [...catalog.questions, ...userQuestions], [catalog.questions, userQuestions]);
   const collections = useMemo(() => [...catalog.collections, ...userCollections], [catalog.collections, userCollections]);
   const collectionPublishers = useMemo(() => new Map(collections.map(collection => [collection.id, collection.publisher])), [collections]);
@@ -216,6 +217,11 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
     }
   };
 
+  const launch = () => {
+    if (!currentPreview) return;
+    onLaunch(generatedQuizFromSelection(title, currentPreview.questions, currentPreview.seed, filters, catalog.catalogId, catalog.catalogVersion));
+  };
+
   const savePreset = async () => {
     if (!range || !restrictCoverage) return;
     const name = prompt('Preset name')?.trim();
@@ -322,11 +328,11 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
             <div className="generator-section-heading"><h2 id="generator-publishers">Publishers</h2><span>{filters.publisherIds.length} selected</span></div>
             <FilterChoices label="Publishers" options={publisherChoices} selected={filters.publisherIds} onChange={setSelectedPublishers}/>
           </section>
-          <details className="generator-section generator-type-picker">
-            <summary><strong>Question types</strong><span>{filters.classifications.length} selected</span></summary>
+          <section className="generator-section generator-type-picker" aria-labelledby="generator-types">
+            <div className="generator-section-heading"><h2 id="generator-types">Question types</h2><span>{filters.classifications.length} selected</span></div>
             <label className="generator-field"><span>Search question types</span><input type="search" value={typeSearch} onChange={event => setTypeSearch(event.target.value)}/></label>
             <FilterChoices label="Question types" options={typeChoices} selected={filters.classifications} onChange={setSelectedTypes} query={typeSearch}/>
-          </details>
+          </section>
           <div className="generator-section generator-availability" aria-label="Eligible question summary">
             <strong>{availability.pool.length} eligible questions</strong>
             {POINT_VALUES.map(point => <div className={`availability-row ${availability.counts[point] < pointCounts[point] ? 'short' : ''}`} key={point}>
@@ -359,7 +365,10 @@ export function QuizGenerator({ catalog, userCollections, userQuestions, pack, d
               </details>
             </li>
           ))}</ol>
-          <button className="primary-button" disabled={saving} onClick={() => void save()}>Save generated quiz</button>
+          <div className="generator-preview-actions">
+            <button className="primary-button" onClick={launch}>Start quiz</button>
+            <button aria-label="Save generated quiz" className="secondary-button" disabled={saving} onClick={() => void save()}>Save for later</button>
+          </div>
         </section>}
       </div>
     </section>

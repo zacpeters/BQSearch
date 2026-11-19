@@ -218,10 +218,11 @@ test('keeps V5 user edits separate from the published catalog and skips conflict
   await row.locator('summary').click();
   await row.getByRole('button', { name: 'Edit' }).click();
   await bank.getByLabel('Answer text').fill('V5 edited answer');
-  await bank.getByLabel('Scripture references').fill('Psalm 3:1–2');
+  await bank.getByLabel('Scripture references').selectOption(['psalms-3-1', 'psalms-3-2']);
   await bank.getByRole('button', { name: 'Save question' }).click();
   await expect(row.getByText('V5 edited answer', { exact: false })).toBeVisible();
-  await expect(row.getByText('Psalms 3:1–2', { exact: false })).toBeVisible();
+  await expect(row.getByText('Psalms 3:1', { exact: false })).toBeVisible();
+  await expect(row.getByText('Psalms 3:2', { exact: false })).toBeVisible();
   await row.getByRole('button', { name: 'Duplicate' }).click();
   await expect(row).toHaveCount(2);
 

@@ -215,3 +215,14 @@ test('filters exact types, restores a preset, and plays the generated quiz in st
   await expect(practice.getByRole('button', { name: 'Psalms 3:2' })).toBeVisible();
   await expect(practice.getByRole('group', { name: 'Red team' }).first().getByRole('button', { name: 'R1' })).toBeVisible();
 });
+
+test('starts a generated quiz directly from the preview', async ({ page }) => {
+  await page.getByRole('button', { name: 'Generate Quiz', exact: true }).click();
+  const generator = page.getByRole('region', { name: 'Generate quiz' });
+  await generator.locator('.generator-button').click();
+  await generator.getByRole('button', { name: 'Start quiz' }).click();
+  const practice = page.getByRole('region', { name: 'Practice quiz' });
+  await expect(practice).toBeVisible();
+  await expect(practice.locator('.practice-question')).toHaveCount(20);
+  await expect(page.getByRole('button', { name: /Library/ })).toBeVisible();
+});

@@ -159,6 +159,7 @@
 .quiz-generator .generator-selection summary small { display: block; margin-top: 4px; }
 .quiz-generator .generator-selection li p { margin: 8px 0 3px; font-size: 13px; }
 .quiz-generator .generator-selection .primary-button { justify-self: start; }
+.quiz-generator .generator-preview-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 [data-theme="dark"] .quiz-generator .availability-row.short { color: #ff9b9b; }
 

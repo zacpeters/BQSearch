@@ -23,3 +23,4 @@ function classification(value?: string) {
 
 export const classificationKey = (value?: string) => classification(value).key;
 export const classificationLabel = (value?: string) => classification(value).label;
+export const classificationChoices = [...new Set(knownTypes.values())];

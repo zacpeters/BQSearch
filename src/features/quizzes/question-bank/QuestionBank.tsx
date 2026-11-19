@@ -1,5 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import type { GeneratedQuiz, QuizCatalog, UserCollection, UserQuestion } from '../types';
+import type { StudyOption } from '../types';
+import { packReferenceKey } from '../../../integration/scripture-provider';
+import { classificationChoices, classificationLabel } from '../generator/classifications';
 import { displayClassification, formatReference, parseQuestionReferences } from '../v5-format';
 import { parseCsvImport, parseJsonImport, type ImportReport } from './importers';
 import { commitUserContent, deleteUserCollection, deleteUserQuestion, saveUserCollection, saveUserQuestion } from '../storage/user-storage';
@@ -11,15 +14,17 @@ type Props = {
   customQuizzes: GeneratedQuiz[];
   onChanged: () => Promise<void>;
   onExport: () => void;
+  referenceOptions: StudyOption[];
 };
 const emptyForm = { collectionId: '', rawQuestion: '', rawAnswer: '', pointValue: '10', classification: '', references: '' };
 
-export function QuestionBankV5({ catalog, userQuestions, userCollections, customQuizzes, onChanged, onExport }: Props) {
+export function QuestionBankV5({ catalog, userQuestions, userCollections, customQuizzes, onChanged, onExport, referenceOptions }: Props) {
   const [search, setSearch] = useState('');
   const [collectionId, setCollectionId] = useState('all');
   const [editing, setEditing] = useState<UserQuestion | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [referenceIds, setReferenceIds] = useState<string[]>([]);
   const [preview, setPreview] = useState<ImportReport | null>(null);
   const [message, setMessage] = useState('');
   const file = useRef<HTMLInputElement>(null);
@@ -36,15 +41,17 @@ export function QuestionBankV5({ catalog, userQuestions, userCollections, custom
     try { await action(); } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to update quiz data.'); }
   };
 
-  const closeEditor = () => { setEditing(null); setForm(emptyForm); setEditorOpen(false); };
+  const closeEditor = () => { setEditing(null); setForm(emptyForm); setReferenceIds([]); setEditorOpen(false); };
   const beginAdd = () => {
     setEditing(null);
     setForm({ ...emptyForm, collectionId: userCollections[0]?.id ?? '' });
+    setReferenceIds([]);
     setEditorOpen(true);
   };
   const beginEdit = (q: UserQuestion) => {
     setEditing(q);
     setForm({ collectionId: q.collectionId, rawQuestion: q.rawQuestion, rawAnswer: q.rawAnswer, pointValue: String(q.pointValue), classification: q.classification ?? '', references: q.references.map(formatReference).join('; ') });
+    setReferenceIds(q.references.flatMap(reference => referenceOptions.filter(option => packReferenceKey(option.reference) === packReferenceKey(reference)).map(option => option.verseId)));
     setEditorOpen(true);
   };
 
@@ -54,8 +61,10 @@ export function QuestionBankV5({ catalog, userQuestions, userCollections, custom
     const pointValue = Number(form.pointValue) as UserQuestion['pointValue'];
     const target = userCollections.find(collection => collection.id === form.collectionId);
     if (!target || !rawQuestion || !rawAnswer || ![10, 20, 30].includes(pointValue)) throw new Error('Choose a user collection and provide a question, answer, and point value.');
-    const references = editing && form.references === editing.references.map(formatReference).join('; ')
-      ? editing.references : parseQuestionReferences(form.references);
+    const references = referenceIds.length > 0
+      ? referenceIds.flatMap(id => referenceOptions.find(option => option.verseId === id)?.reference ?? [])
+      : editing && form.references === editing.references.map(formatReference).join('; ')
+        ? editing.references : parseQuestionReferences(form.references);
     const original = editing ?? {
       id: `user-q-${crypto.randomUUID()}`,
       quizNumber: 0,
@@ -94,6 +103,18 @@ export function QuestionBankV5({ catalog, userQuestions, userCollections, custom
       ...(collection ?? { id: `user-${crypto.randomUUID()}`, sourceFilename: 'user-created', quizIds: [], bundled: false }),
       name, publisher, year,
     });
+    await onChanged();
+  });
+
+  const createCollectionForQuestion = () => write(async () => {
+    const name = prompt('Collection name')?.trim();
+    if (!name) return;
+    const publisher = prompt('Publisher/source', 'Personal')?.trim() || 'Personal';
+    const year = Number(prompt('Year', String(new Date().getFullYear()))) || new Date().getFullYear();
+    const id = `user-${crypto.randomUUID()}`;
+    await saveUserCollection({ id, name, publisher, year, sourceFilename: 'user-created', quizIds: [], bundled: false });
+    setForm(previous => ({ ...previous, collectionId: id }));
+    setMessage(`Created ${name}.`);
     await onChanged();
   });
 
@@ -178,18 +199,26 @@ export function QuestionBankV5({ catalog, userQuestions, userCollections, custom
       {message && <div className="quiz-message" role="status">{message}<button onClick={() => setMessage('')}>Dismiss</button></div>}
       {editorOpen && <div className="editor-panel">
         <div className="block-heading"><strong>{editing ? 'Edit question' : 'Add question'}</strong><button className="text-button" onClick={closeEditor}>Cancel</button></div>
-        <select aria-label="Question collection" value={form.collectionId} onChange={e => setForm({ ...form, collectionId: e.target.value })}>
+        <div className="question-editor-collection">
+          <select aria-label="Question collection" value={form.collectionId} onChange={e => setForm({ ...form, collectionId: e.target.value })}>
           <option value="">Select collection</option>
           {userCollections.map(c => <option value={c.id} key={c.id}>{c.name}</option>)}
-        </select>
+          </select>
+          <button className="text-button" type="button" onClick={() => void createCollectionForQuestion()}>Create collection</button>
+        </div>
         <textarea aria-label="Question text" placeholder="Question text" value={form.rawQuestion} onChange={e => setForm({ ...form, rawQuestion: e.target.value })}/>
         <textarea aria-label="Answer text" placeholder="Answer text" value={form.rawAnswer} onChange={e => setForm({ ...form, rawAnswer: e.target.value })}/>
         <div className="editor-grid">
           <select aria-label="Point value" value={form.pointValue} onChange={e => setForm({ ...form, pointValue: e.target.value })}>
             {[10, 20, 30].map(points => <option key={points} value={points}>{points} points</option>)}
           </select>
-          <input aria-label="Classification" placeholder="Classification" value={form.classification} onChange={e => setForm({ ...form, classification: e.target.value })}/>
-          <input aria-label="Scripture references" placeholder="Psalm 5:8; Psalm 18:20" value={form.references} onChange={e => setForm({ ...form, references: e.target.value })}/>
+          <select aria-label="Classification" value={classificationLabel(form.classification) || 'Direct'} onChange={e => setForm({ ...form, classification: e.target.value })}>
+            {classificationChoices.map(type => <option value={type} key={type}>{type}</option>)}
+            {form.classification && !classificationChoices.includes(classificationLabel(form.classification)) && <option value={form.classification}>{form.classification}</option>}
+          </select>
+          <select aria-label="Scripture references" multiple value={referenceIds} onChange={e => setReferenceIds([...e.target.selectedOptions].map(option => option.value))}>
+            {referenceOptions.map(option => <option key={option.verseId} value={option.verseId}>{`#${option.studyNumber} · ${formatReference(option.reference)}`}</option>)}
+          </select>
         </div>
         <button className="button primary" onClick={() => void saveQuestion()}>{editing ? 'Save question' : 'Add question'}</button>
       </div>}
