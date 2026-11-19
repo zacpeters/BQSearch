@@ -66,7 +66,8 @@ test('uses unified quiz navigation and theme while preserving host tools and all
   await page.getByRole('button', { name: 'Start scoring' }).click();
   await page.getByRole('textbox', { name: 'red team name' }).fill('Synthetic shell test team');
   const scoreStyles = await hostStyles(page, '.scorer-view');
-  const before = await quizStorage(page, fixtures);
+  const publishedSession = { ...fixtures.original.sessions[0], id: 'fixture-published-session', quizId: 'bq-powers-2027-quiz-01', attempts: [], states: {} };
+  const before = await quizStorage(page, { ...fixtures, original: { ...fixtures.original, sessions: [...fixtures.original.sessions, publishedSession] } });
 
   await page.getByRole('button', { name: 'Quizzes', exact: true }).click();
   const frame = page.getByRole('region', { name: 'Quizzes', exact: true });
@@ -95,15 +96,25 @@ test('uses unified quiz navigation and theme while preserving host tools and all
   const gridColumns = page.viewportSize()!.width <= 850 ? 1 : 3;
   expect(await cards.evaluate(node => getComputedStyle(node).gridTemplateColumns.split(' ').length)).toBe(gridColumns);
 
+  const practice = page.getByRole('region', { name: 'Practice quiz' });
   await saved.getByRole('button', { name: /Saved shell fixture \(original\)/ }).click();
-  await expect(frame.getByRole('heading', { name: 'Saved shell fixture (original)' })).toBeVisible();
-  await frame.locator('.quiz-question-card summary').first().click();
-  await expect(frame.locator('.quiz-question-card').first()).toContainText('Synthetic question 2');
-  await frame.getByRole('button', { name: '‹ Collections' }).click();
+  await expect(practice.getByRole('heading', { name: 'Saved shell fixture (original)', level: 1 })).toBeVisible();
+  await expect(practice.locator('.practice-question-text').first()).toHaveText('Synthetic question 2', { useInnerText: true });
+  await expect(practice.getByText('Reread for Yellow')).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('practice-saved.png'), animations: 'disabled' });
+  await practice.getByRole('button', { name: /Library/ }).click();
   await frame.getByRole('button', { name: /BQ Powers.*25 quizzes/ }).click();
   await expect(frame.locator('.quiz-row')).toHaveCount(25);
   await expect(frame.locator('.quiz-row').first()).toContainText('Psalms 3:1–5:12');
-  await page.screenshot({ path: testInfo.outputPath('library-drilldown.png'), animations: 'disabled' });
+  await frame.locator('.quiz-row').first().click();
+  await expect(practice.locator('.practice-question')).toHaveCount(20);
+  await expect(page.locator('header')).toHaveCount(1);
+  await expect(practice.getByRole('group', { name: 'Red team' }).first().getByRole('button', { name: 'R1' })).toBeVisible();
+  const practiceColumns = page.viewportSize()!.width <= 850 ? 'block' : 'grid';
+  await expect(practice.locator('.practice-layout')).toHaveCSS('display', practiceColumns);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => innerWidth));
+  await page.screenshot({ path: testInfo.outputPath('practice-published.png'), animations: 'disabled' });
+  await practice.getByRole('button', { name: /Library/ }).click();
 
   await nav.getByRole('button', { name: 'Question Bank' }).click();
   await expect(frame.getByText('904 matching', { exact: true })).toBeVisible();

@@ -37,10 +37,10 @@ test('opens the public Library, Question Bank and Generator on a fresh visit and
   await powers.click();
   await expect(page.locator('.quiz-row')).toHaveCount(25);
   await page.locator('.quiz-row').first().click();
-  await expect(page.locator('.quiz-question-card')).toHaveCount(20);
-  await page.locator('.quiz-question-card summary').first().click();
-  await expect(page.locator('.quiz-question-card').first()).toContainText(approved.questions[0].rawQuestion);
-  await expect(page.locator('.quiz-question-card').first()).toContainText(approved.questions[0].rawAnswer);
+  await expect(page.locator('.practice-question')).toHaveCount(20);
+  await expect(page.locator('.practice-question-text').first()).toHaveText(approved.questions[0].rawQuestion);
+  await expect(page.locator('.answer-line p').first()).toHaveText(approved.questions[0].rawAnswer);
+  await page.getByRole('region', { name: 'Practice quiz' }).getByRole('button', { name: /Library/ }).click();
   await page.getByRole('button', { name: 'Question Bank' }).click();
   await expect(page.getByText('900 matching', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Generate Quiz', exact: true }).click();

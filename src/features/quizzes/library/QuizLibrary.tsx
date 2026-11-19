@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import type { QuizPracticeSession, GeneratedQuiz, PublishedQuiz, QuizCollection, QuizQuestion } from '../types';
-import { formatReference, observedCoverage } from '../v5-format';
+import { observedCoverage } from '../v5-format';
 
 type QuizSelection = PublishedQuiz | GeneratedQuiz;
 type Props = {
@@ -9,13 +9,13 @@ type Props = {
   questions: QuizQuestion[];
   savedQuestions: QuizQuestion[];
   sessions: QuizPracticeSession[];
+  onOpen: (quiz: QuizSelection, questions: (QuizQuestion | undefined)[]) => void;
   renderSavedQuizzes: (onOpen: (quiz: GeneratedQuiz) => void) => ReactNode;
 };
 
-export function LibraryV5({ collections, quizzes, questions, savedQuestions, sessions, renderSavedQuizzes }: Props) {
+export function LibraryV5({ collections, quizzes, questions, savedQuestions, sessions, onOpen, renderSavedQuizzes }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
-  const [activeQuiz, setActiveQuiz] = useState<QuizSelection | null>(null);
   const visible = collections.filter(c => `${c.name} ${c.publisher} ${c.year ?? ''}`.toLowerCase().includes(search.toLowerCase()));
   const current = collections.find(c => c.id === selected);
   const currentQuizzes = quizzes.filter(q => q.collectionId === selected);
@@ -35,31 +35,6 @@ export function LibraryV5({ collections, quizzes, questions, savedQuestions, ses
     return { questions: rows.length, quizzes: quizzes.filter(q => q.collectionId === collection.id).length, coverage: observedCoverage(rows) };
   };
 
-  if (activeQuiz) {
-    const slots = orderedQuestions(activeQuiz);
-    const rows = slots.filter(question => question !== undefined);
-    const missing = activeQuiz.questionIds.length - rows.length;
-    return (
-      <section className="bqquiz-v5 page">
-        <div className="page-title">
-          <div>
-            <button className="text-button" onClick={() => setActiveQuiz(null)}>‹ {current?.name ?? 'Collections'}</button>
-            <span className="overline">QUIZ PREVIEW</span>
-            <h1>{activeQuiz.title}</h1>
-            <p>{'edition' in activeQuiz && `${[current?.publisher, activeQuiz.edition].filter(Boolean).join(' · ')} · `}{rows.length} questions · {rows.reduce((sum, question) => sum + question.pointValue, 0)} possible points</p>
-            {missing > 0 && <p>{missing} saved {missing === 1 ? 'question is' : 'questions are'} unavailable.</p>}
-          </div>
-        </div>
-        <div className="quiz-question-preview">{slots.map((question, index) => question && (
-          <details className="quiz-question-card" key={`${question.id}-${index}`}>
-            <summary><span>{String(index + 1).padStart(2, '0')}</span><strong>{question.pointValue} points · {question.classification || 'Direct'}</strong><small>{question.source?.publisher ?? current?.publisher} · p.{question.source?.page ?? '—'}</small></summary>
-            <div><p>{question.rawQuestion}</p><p><b>ANS.</b> {question.rawAnswer}</p><small>{question.references.length ? question.references.map(formatReference).join(' · ') : 'No structured reference'}</small></div>
-          </details>
-        ))}</div>
-      </section>
-    );
-  }
-
   return (
     <section className="bqquiz-v5 page library-v5">
       {!current ? <>
@@ -77,7 +52,7 @@ export function LibraryV5({ collections, quizzes, questions, savedQuestions, ses
           );
         })}</div>
         {!visible.length && <p className="quiet">No collections match this search.</p>}
-        {renderSavedQuizzes(setActiveQuiz)}
+        {renderSavedQuizzes(quiz => onOpen(quiz, orderedQuestions(quiz)))}
         {recent.length > 0 && <section className="content-section">
           <div className="section-heading"><h2>Recent practice</h2></div>
           {recent.map(session => <div className="recent-row" key={session.id}>
@@ -90,7 +65,7 @@ export function LibraryV5({ collections, quizzes, questions, savedQuestions, ses
           <h1>{current.name}</h1><p>{current.publisher} · {current.year ?? '—'} · {summary(current).coverage}</p>
         </div></div>
         <div className="quiz-list">{currentQuizzes.map(quiz => (
-          <button className="quiz-row" key={quiz.id} onClick={() => setActiveQuiz(quiz)}>
+          <button className="quiz-row" key={quiz.id} onClick={() => onOpen(quiz, orderedQuestions(quiz))}>
             <span className="quiz-index">{String(quiz.quizNumber).padStart(2, '0')}</span>
             <span><strong>Quiz {quiz.quizNumber}</strong><small>{quiz.questionIds.length} questions · References: {observedCoverage(orderedQuestions(quiz).filter(question => question !== undefined))}</small></span>
             <span className="row-arrow">→</span>

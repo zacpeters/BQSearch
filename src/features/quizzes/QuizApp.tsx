@@ -12,8 +12,11 @@ import { GeneratedQuizList } from './generator/GeneratedQuizList';
 import { listGeneratedQuizzes } from './storage/generator-storage';
 import { listQuizSessions, listUserCollections, listUserQuestions } from './storage/user-storage';
 import { exportMigrationBundle } from '../../integration/migration';
+import { createPackScriptureProvider } from '../../integration/scripture-provider';
+import { PracticeWorkspace } from './practice/PracticeWorkspace';
+import type { PracticeQuiz } from './practice/PracticeViewerV5';
 import { downloadQuizData } from './v5-format';
-import type { GeneratedQuiz, QuizCatalog, QuizPracticeSession, UserCollection, UserQuestion } from './types';
+import type { GeneratedQuiz, QuizCatalog, QuizPracticeSession, QuizQuestion, UserCollection, UserQuestion } from './types';
 import './quiz-navigation.css';
 import './v5-library-bank.css';
 
@@ -34,6 +37,7 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
   const [userQuestions, setUserQuestions] = useState<UserQuestion[]>([]);
   const [generatedQuizzes, setGeneratedQuizzes] = useState<GeneratedQuiz[]>([]);
   const [sessions, setSessions] = useState<QuizPracticeSession[]>([]);
+  const [practice, setPractice] = useState<{ quiz: PracticeQuiz; questions: (QuizQuestion | undefined)[] }>();
   const [loadMessage, setLoadMessage] = useState('');
   const [importMessage, setImportMessage] = useState('');
   const [expectedDigest, setExpectedDigest] = useState('');
@@ -42,6 +46,7 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
   const savedSection = useRef<HTMLElement>(null);
   const focusSavedAfterNavigation = useRef(false);
   const catalog = useMemo(() => combineCatalogs(bundled, installed), [bundled, installed]);
+  const practiceScripture = useMemo(() => createPackScriptureProvider(pack, { division }), [pack, division]);
   const v5Content = useMemo(() => {
     const publishedCollections = new Set(catalog?.collections.map(collection => collection.id));
     const publishedQuestions = new Set(catalog?.questions.map(question => question.id));
@@ -119,6 +124,14 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
 
   if (loading) return <div className="loading" role="status">Loading quiz catalogs…</div>;
 
+  if (practice) return <section className="quiz-shell" aria-label="Quizzes">
+    <PracticeWorkspace quiz={practice.quiz} questions={practice.questions} scriptureProvider={practiceScripture} onBack={() => {
+      setPractice(undefined);
+      window.scrollTo(0, 0);
+      void listQuizSessions().then(setSessions, () => setLoadMessage('Unable to load recent practice history.'));
+    }}/>
+  </section>;
+
   return (
     <section className="quiz-shell" aria-label="Quizzes">
       <div className="quiz-context">
@@ -151,7 +164,10 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
       </div>
       {loadMessage && <div className="quiz-message" role="status">{loadMessage}<button onClick={() => setLoadMessage('')}>Dismiss</button></div>}
       {!catalog && <div className="quiz-empty">No published catalog is available.</div>}
-      {catalog && tab === 'library' && <LibraryV5 collections={v5Content.allCollections} quizzes={catalog.quizzes} questions={v5Content.allQuestions} savedQuestions={v5Content.savedQuestions} sessions={sessions} renderSavedQuizzes={onOpen => generatedQuizzes.length > 0 && (
+      {catalog && tab === 'library' && <LibraryV5 collections={v5Content.allCollections} quizzes={catalog.quizzes} questions={v5Content.allQuestions} savedQuestions={v5Content.savedQuestions} sessions={sessions} onOpen={(quiz, questions) => {
+        setPractice({ quiz, questions });
+        window.scrollTo(0, 0);
+      }} renderSavedQuizzes={onOpen => generatedQuizzes.length > 0 && (
         <GeneratedQuizList quizzes={generatedQuizzes} questions={v5Content.savedQuestions} onOpen={onOpen} onChanged={refreshUserData} sectionRef={savedSection}/>
       )}/>}
       {catalog && tab === 'bank' && <QuestionBankV5 catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} customQuizzes={generatedQuizzes} onChanged={refreshUserData} onExport={() => void exportUserData()}/>}
