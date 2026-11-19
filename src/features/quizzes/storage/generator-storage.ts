@@ -5,7 +5,14 @@ function openDb(): Promise<IDBDatabase> { return new Promise((resolve, reject) =
 function read<T>(store: string): Promise<T[]> { return openDb().then(db => new Promise((resolve, reject) => { const request = db.transaction(store).objectStore(store).getAll(); request.onsuccess = () => { db.close(); resolve(request.result as T[]); }; request.onerror = () => { db.close(); reject(request.error); }; })); }
 export const listGeneratedQuizzes = () => read<GeneratedQuiz>('customQuizzes');
 export const listCoveragePresets = () => read<CoveragePreset>('coveragePresets');
-function write(store: string, value: unknown) { return openDb().then(db => new Promise<void>((resolve, reject) => { const request = db.transaction(store, 'readwrite').objectStore(store).put(value); request.onsuccess = () => { db.close(); resolve(); }; request.onerror = () => { db.close(); reject(request.error); }; })); }
+function write(store: string, value: unknown) {
+  return openDb().then(db => new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(store, 'readwrite');
+    transaction.oncomplete = () => { db.close(); resolve(); };
+    transaction.onabort = () => { db.close(); reject(transaction.error ?? new Error('Unable to save quiz data.')); };
+    transaction.objectStore(store).put(value);
+  }));
+}
 export const saveGeneratedQuiz = (quiz: GeneratedQuiz) => write('customQuizzes', quiz);
 export const saveCoveragePreset = (preset: CoveragePreset) => write('coveragePresets', preset);
 export async function deleteGeneratedQuiz(id: string) { const db = await openDb(); return new Promise<void>((resolve, reject) => { const request = db.transaction('customQuizzes', 'readwrite').objectStore('customQuizzes').delete(id); request.onsuccess = () => { db.close(); resolve(); }; request.onerror = () => { db.close(); reject(request.error); }; }); }

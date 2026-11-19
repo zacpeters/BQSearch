@@ -10,8 +10,8 @@ export interface UserCollection extends QuizCollection { bundled: false; }
 export type QuizReference = NormalizedScriptureReference;
 export type GenerationStrategy = 'balanced' | 'random';
 export interface CoverageSelection { start: QuizReference; end: QuizReference; startStudyNumber: number; endStudyNumber: number; }
-export interface GenerationFilters { collectionIds: string[]; publisherIds: string[]; pointCounts: { 10: number; 20: number; 30: number }; classifications: string[]; coverage?: CoverageSelection; restrictCoverage: boolean; strategy: GenerationStrategy; seasonId: string; division: string; packId: string; }
+export interface GenerationFilters { collectionIds: string[]; publisherIds: string[]; pointCounts: { 10: number; 20: number; 30: number }; classifications: string[]; selectionMode?: 'explicit'; coverage?: CoverageSelection; restrictCoverage: boolean; strategy: GenerationStrategy; seasonId: string; division: string; packId: string; }
 export interface GeneratedQuiz { id: string; title: string; createdAt: string; updatedAt: string; questionIds: string[]; seed: number; filters: GenerationFilters; totalPoints: number; catalogId: string; catalogVersion: string; }
-export interface CoveragePreset { id: string; name: string; range: CoverageSelection; seasonId: string; division: string; packId: string; catalogId: string; updatedAt: string; }
+export interface CoveragePreset { id: string; name: string; range: Pick<CoverageSelection, 'start' | 'end'> & Partial<Pick<CoverageSelection, 'startStudyNumber' | 'endStudyNumber'>>; seasonId?: string; division?: string; packId?: string; catalogId?: string; updatedAt: string; }
 export interface StudyOption { studyNumber: number; reference: QuizReference; verseId: string; }
 export interface QuizPracticeSession { id: string; quizId: string; updatedAt: string; }

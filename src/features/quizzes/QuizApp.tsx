@@ -171,7 +171,7 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
         <GeneratedQuizList quizzes={generatedQuizzes} questions={v5Content.savedQuestions} onOpen={onOpen} onChanged={refreshUserData} sectionRef={savedSection}/>
       )}/>}
       {catalog && tab === 'bank' && <QuestionBankV5 catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} customQuizzes={generatedQuizzes} onChanged={refreshUserData} onExport={() => void exportUserData()}/>}
-      {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={userCollections} userQuestions={userQuestions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
+      {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
         await refreshUserData();
         focusSavedAfterNavigation.current = true;
         setTab('library');
