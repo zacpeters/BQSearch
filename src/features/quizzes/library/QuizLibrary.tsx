@@ -7,24 +7,19 @@ type Props = {
   collections: QuizCollection[];
   quizzes: PublishedQuiz[];
   questions: QuizQuestion[];
-  savedQuestions: QuizQuestion[];
   sessions: QuizPracticeSession[];
-  onOpen: (quiz: QuizSelection, questions: (QuizQuestion | undefined)[]) => void;
+  collectionId?: string;
+  onSelectCollection: (id?: string) => void;
+  onOpen: (quiz: QuizSelection) => void;
   renderSavedQuizzes: (onOpen: (quiz: GeneratedQuiz) => void) => ReactNode;
 };
 
-export function LibraryV5({ collections, quizzes, questions, savedQuestions, sessions, onOpen, renderSavedQuizzes }: Props) {
+export function LibraryV5({ collections, quizzes, questions, sessions, collectionId, onSelectCollection, onOpen, renderSavedQuizzes }: Props) {
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<string | null>(null);
   const visible = collections.filter(c => `${c.name} ${c.publisher} ${c.year ?? ''}`.toLowerCase().includes(search.toLowerCase()));
-  const current = collections.find(c => c.id === selected);
-  const currentQuizzes = quizzes.filter(q => q.collectionId === selected);
+  const current = collections.find(c => c.id === collectionId);
+  const currentQuizzes = quizzes.filter(q => q.collectionId === collectionId);
   const questionsById = useMemo(() => new Map(questions.map(question => [question.id, question])), [questions]);
-  const savedQuestionsById = useMemo(() => new Map(savedQuestions.map(question => [question.id, question])), [savedQuestions]);
-  const orderedQuestions = (quiz: QuizSelection) => {
-    const index = 'collectionId' in quiz ? questionsById : savedQuestionsById;
-    return quiz.questionIds.map(id => index.get(id));
-  };
   const recent = useMemo(() => {
     const published = new Map(quizzes.map(quiz => [quiz.id, quiz]));
     return sessions.filter(session => published.has(session.quizId)).sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? '')).slice(0, 5)
@@ -45,14 +40,14 @@ export function LibraryV5({ collections, quizzes, questions, savedQuestions, ses
         <div className="collection-cards">{visible.map(collection => {
           const counts = summary(collection);
           return (
-            <button className="collection-card" key={collection.id} onClick={() => setSelected(collection.id)}>
+            <button className="collection-card" key={collection.id} onClick={() => onSelectCollection(collection.id)}>
               <strong>{collection.name}</strong><span>{collection.publisher} · {collection.year ?? '—'}</span>
               <small>{counts.quizzes} quizzes · {counts.questions} questions</small><small>{counts.coverage}</small>
             </button>
           );
         })}</div>
         {!visible.length && <p className="quiet">No collections match this search.</p>}
-        {renderSavedQuizzes(quiz => onOpen(quiz, orderedQuestions(quiz)))}
+        {renderSavedQuizzes(onOpen)}
         {recent.length > 0 && <section className="content-section">
           <div className="section-heading"><h2>Recent practice</h2></div>
           {recent.map(session => <div className="recent-row" key={session.id}>
@@ -61,13 +56,13 @@ export function LibraryV5({ collections, quizzes, questions, savedQuestions, ses
         </section>}
       </> : <>
         <div className="page-title"><div>
-          <button className="text-button" onClick={() => setSelected(null)}>‹ Collections</button>
+          <button className="text-button" onClick={() => onSelectCollection()}>‹ Collections</button>
           <h1>{current.name}</h1><p>{current.publisher} · {current.year ?? '—'} · {summary(current).coverage}</p>
         </div></div>
         <div className="quiz-list">{currentQuizzes.map(quiz => (
-          <button className="quiz-row" key={quiz.id} onClick={() => onOpen(quiz, orderedQuestions(quiz))}>
+          <button className="quiz-row" key={quiz.id} onClick={() => onOpen(quiz)}>
             <span className="quiz-index">{String(quiz.quizNumber).padStart(2, '0')}</span>
-            <span><strong>Quiz {quiz.quizNumber}</strong><small>{quiz.questionIds.length} questions · References: {observedCoverage(orderedQuestions(quiz).filter(question => question !== undefined))}</small></span>
+            <span><strong>Quiz {quiz.quizNumber}</strong><small>{quiz.questionIds.length} questions · References: {observedCoverage(quiz.questionIds.flatMap(id => questionsById.get(id) ?? []))}</small></span>
             <span className="row-arrow">→</span>
           </button>
         ))}</div>

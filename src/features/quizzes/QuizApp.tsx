@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Ellipsis } from 'lucide-react';
 import type { Division, ScripturePack } from '../../types';
+import { readRoute, type QuizRoute } from '../../app-navigation';
 import { loadBundledCatalog } from './catalog/bundled';
 import { combineCatalogs } from './catalog/combine';
 import { listCatalogs, saveCatalog } from './catalog/storage';
@@ -14,7 +15,6 @@ import { listQuizSessions, listUserCollections, listUserQuestions } from './stor
 import { exportMigrationBundle } from '../../integration/migration';
 import { createPackScriptureProvider } from '../../integration/scripture-provider';
 import { PracticeWorkspace } from './practice/PracticeWorkspace';
-import type { PracticeQuiz } from './practice/PracticeViewerV5';
 import { downloadQuizData } from './v5-format';
 import type { GeneratedQuiz, QuizCatalog, QuizPracticeSession, QuizQuestion, UserCollection, UserQuestion } from './types';
 import './quiz-navigation.css';
@@ -26,18 +26,18 @@ const tabs = [
   ['generator', 'Generate Quiz'],
 ] as const;
 
-type QuizTab = (typeof tabs)[number][0];
-
-export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack: ScripturePack; division: Division; studyStart: number; studyEnd: number }) {
+export default function QuizApp({ pack, division, studyStart, studyEnd, route, onNavigate }: {
+  pack: ScripturePack; division: Division; studyStart: number; studyEnd: number;
+  route: QuizRoute; onNavigate: (next: QuizRoute) => void;
+}) {
+  const { tab } = route;
   const [bundled, setBundled] = useState<QuizCatalog>();
   const [installed, setInstalled] = useState<QuizCatalog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<QuizTab>('library');
   const [userCollections, setUserCollections] = useState<UserCollection[]>([]);
   const [userQuestions, setUserQuestions] = useState<UserQuestion[]>([]);
   const [generatedQuizzes, setGeneratedQuizzes] = useState<GeneratedQuiz[]>([]);
   const [sessions, setSessions] = useState<QuizPracticeSession[]>([]);
-  const [practice, setPractice] = useState<{ quiz: PracticeQuiz; questions: (QuizQuestion | undefined)[] }>();
   const [loadMessage, setLoadMessage] = useState('');
   const [importMessage, setImportMessage] = useState('');
   const [expectedDigest, setExpectedDigest] = useState('');
@@ -70,13 +70,20 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
       loadBundledCatalog().then(setBundled),
       listCatalogs().then(setInstalled),
       refreshUserData(),
-      listQuizSessions().then(setSessions),
-    ]).then(([published, local, user, history]) => {
+    ]).then(([published, local, user]) => {
       if (published.status === 'rejected') setLoadMessage('Unable to load the bundled quiz catalog. Reopen Quizzes to retry.');
-      if (local.status === 'rejected' || user.status === 'rejected' || history.status === 'rejected') setLoadMessage('Unable to load some local quiz data. Reopen Quizzes to retry.');
+      if (local.status === 'rejected' || user.status === 'rejected') setLoadMessage('Unable to load some local quiz data. Reopen Quizzes to retry.');
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (loading || route.practice || tab !== 'library') return;
+    let active = true;
+    void listQuizSessions().then(value => { if (active) setSessions(value); },
+      () => { if (active) setLoadMessage('Unable to load recent practice history.'); });
+    return () => { active = false; };
+  }, [loading, route.practice?.id, tab]);
 
   useEffect(() => {
     if (tab !== 'library' || !focusSavedAfterNavigation.current) return;
@@ -124,20 +131,27 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
 
   if (loading) return <div className="loading" role="status">Loading quiz catalogs…</div>;
 
-  if (practice) return <section className="quiz-shell" aria-label="Quizzes">
-    <PracticeWorkspace quiz={practice.quiz} questions={practice.questions} scriptureProvider={practiceScripture} onBack={() => {
-      setPractice(undefined);
+  if (route.practice) {
+    const { id, kind } = route.practice;
+    const quiz = kind === 'saved' ? generatedQuizzes.find(item => item.id === id) : catalog?.quizzes.find(item => item.id === id);
+    const index = new Map((kind === 'saved' ? v5Content.savedQuestions : v5Content.allQuestions).map(question => [question.id, question]));
+    const onBack = () => {
+      onNavigate({ view: 'quizzes', tab: 'library' });
       window.scrollTo(0, 0);
-      void listQuizSessions().then(setSessions, () => setLoadMessage('Unable to load recent practice history.'));
-    }}/>
-  </section>;
+    };
+    return <section className="quiz-shell" aria-label="Quizzes">
+      {quiz ? <PracticeWorkspace key={`${kind}:${id}`} quiz={quiz} questions={quiz.questionIds.map(questionId => index.get(questionId))}
+        scriptureProvider={practiceScripture} onBack={onBack}/>
+        : <div className="quiz-message" role="status">This quiz is unavailable in this browser.<button onClick={onBack}>‹ Library</button></div>}
+    </section>;
+  }
 
   return (
     <section className="quiz-shell" aria-label="Quizzes">
       <div className="quiz-context">
         {catalog && <nav className="search-assist" aria-label="Quiz sections">
           {tabs.map(([id, label]) => (
-            <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}</button>
+            <button key={id} aria-pressed={tab === id} onClick={() => onNavigate({ view: 'quizzes', tab: id })}>{label}</button>
           ))}
         </nav>}
         <details className="quiz-catalog-options">
@@ -164,17 +178,20 @@ export default function QuizApp({ pack, division, studyStart, studyEnd }: { pack
       </div>
       {loadMessage && <div className="quiz-message" role="status">{loadMessage}<button onClick={() => setLoadMessage('')}>Dismiss</button></div>}
       {!catalog && <div className="quiz-empty">No published catalog is available.</div>}
-      {catalog && tab === 'library' && <LibraryV5 collections={v5Content.allCollections} quizzes={catalog.quizzes} questions={v5Content.allQuestions} savedQuestions={v5Content.savedQuestions} sessions={sessions} onOpen={(quiz, questions) => {
-        setPractice({ quiz, questions });
+      {catalog && tab === 'library' && <LibraryV5 collections={v5Content.allCollections} quizzes={catalog.quizzes} questions={v5Content.allQuestions} sessions={sessions} collectionId={route.collectionId}
+        onSelectCollection={collectionId => onNavigate({ view: 'quizzes', tab: 'library', collectionId })} onOpen={quiz => {
+        onNavigate({ ...route, practice: { id: quiz.id, kind: 'collectionId' in quiz ? 'published' : 'saved' } });
         window.scrollTo(0, 0);
       }} renderSavedQuizzes={onOpen => generatedQuizzes.length > 0 && (
         <GeneratedQuizList quizzes={generatedQuizzes} questions={v5Content.savedQuestions} onOpen={onOpen} onChanged={refreshUserData} sectionRef={savedSection}/>
       )}/>}
       {catalog && tab === 'bank' && <QuestionBankV5 catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} customQuizzes={generatedQuizzes} onChanged={refreshUserData} onExport={() => void exportUserData()}/>}
-      {catalog && tab === 'generator' && <QuizGenerator catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
+      {catalog && tab === 'generator' && <QuizGenerator key={JSON.stringify([pack.id, pack.version, division, studyStart, studyEnd])} catalog={catalog} userCollections={v5Content.collections} userQuestions={v5Content.questions} pack={pack} division={division} studyStart={studyStart} studyEnd={studyEnd} onSaved={async () => {
         await refreshUserData();
+        const current = readRoute(new URL(window.location.href), true);
+        if (current.view !== 'quizzes' || current.tab !== 'generator') return;
         focusSavedAfterNavigation.current = true;
-        setTab('library');
+        onNavigate({ view: 'quizzes', tab: 'library' });
       }}/>}
     </section>
   );

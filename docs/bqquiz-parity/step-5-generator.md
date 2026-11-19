@@ -63,3 +63,10 @@ Excluding these records is correct for strict mode given the approved structured
 Chromium tests checked the grid, control bounds, horizontal overflow and pointer access to Generate below the toolbar in each viewport. The same four profiles exercised exact type filtering, collection/publisher intersection, shortage reporting, new and standalone coverage presets, custom distribution, user-content generation, saved IDs and order, and the Library-to-Practice flow. Layout coverage uses Chromium emulation for tablets and phones.
 
 All 157 unit tests, 28 feature-enabled browser tests and the feature-disabled browser test passed. Pack validation and the feature-enabled, feature-disabled and admin production builds passed. The `/BQSearch-Preview/` build precaches the verified catalog and quiz assets through the host service worker. The feature-disabled `/BQSearch/` build excludes the catalog and quiz assets.
+
+## Coverage and navigation follow-up
+
+- Start and End accept Lookup-style references, including unambiguous shorthand, and study numbers. A native Browse control lists the active division's actual verses. Reversed ranges show an explanation and block generation while the range restriction is active.
+- BQSearch records the current screen in the URL. Reload and browser Back and Forward restore quiz tabs, collection drill-down, and published or saved Practice. Practice resolves the original question IDs in order and opens existing session data.
+- The Generator keeps its draft in the current browser tab, scoped to the active pack, division and Lookup study range. It restores the range, title, filters, and selection strategy. A generated preview is restored when the same seeded selection reproduces its ordered IDs and question revisions. Saving still writes the quiz through the existing IndexedDB path.
+- Browser coverage exercises verse browsing, shorthand entry, reversed ranges, reload, and Back and Forward in all four viewport profiles. Separate checks restore the Generator preview offline and reopen an in-progress Practice session with the same recorded attempts.

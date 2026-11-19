@@ -51,8 +51,7 @@ test('opens the public Library, Question Bank and Generator on a fresh visit and
   await expect(page.getByRole('button', { name: 'Save generated quiz' })).toBeVisible();
 
   await page.reload();
-  await page.getByRole('button', { name: 'Quizzes' }).click();
-  await expect(page.locator('.collection-card')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: 'Save generated quiz' })).toBeVisible();
   await expect.poll(() => page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
     const cacheNames = await caches.keys();
@@ -61,7 +60,8 @@ test('opens the public Library, Question Bank and Generator on a fresh visit and
   })).toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await page.getByRole('button', { name: 'Quizzes' }).click();
+  await expect(page.getByRole('button', { name: 'Save generated quiz' })).toBeVisible();
+  await page.getByRole('button', { name: 'Library', exact: true }).click();
   await expect(powers).toBeVisible();
   await expect(liftUp).toBeVisible();
   await expect(page.locator('.collection-card')).toHaveCount(2);
@@ -86,7 +86,8 @@ test('installs a local catalog and persists Library/Question Bank state', async 
   await page.locator('.bank-item').first().locator('summary').click();
   await expect(page.getByText('Synthetic answer two')).toBeVisible();
   await page.reload();
-  await page.getByRole('button', { name: 'Quizzes' }).click();
+  await expect(page.getByRole('heading', { name: 'Questions', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Library', exact: true }).click();
   await expect(page.getByRole('button', { name: /Synthetic Collection/ })).toBeVisible();
 });
 
@@ -121,8 +122,8 @@ test('creates a user collection/question and uses the generator controls', async
   });
   await page.getByRole('button', { name: 'Generate Quiz' }).click();
   await expect(page.getByRole('heading', { name: 'Generate quiz' })).toBeVisible();
-  await expect(page.getByLabel('Start Verse')).toBeVisible();
-  await expect(page.getByLabel('End Verse')).toBeVisible();
+  await expect(page.getByLabel('Start Verse', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('End Verse', { exact: true })).toBeVisible();
   await page.getByLabel('Default distribution').uncheck();
   await page.getByLabel('10-point questions').fill('1');
   await page.getByLabel('20-point questions').fill('0');
@@ -133,7 +134,6 @@ test('creates a user collection/question and uses the generator controls', async
   await expect(page.getByRole('region', { name: 'Saved quizzes' })).toBeFocused();
   await expect(page.getByRole('heading', { name: 'Collections' })).toBeVisible();
   await page.reload();
-  await page.getByRole('button', { name: 'Quizzes' }).click();
   await expect(page.getByRole('heading', { name: 'Saved quizzes' })).toBeVisible();
   await expect(page.getByText('Generated quiz', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Question Bank' }).click();

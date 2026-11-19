@@ -99,10 +99,12 @@ test('records, reviews, prints, resumes, and resets V5 Practice while keeping hi
     expect.objectContaining({ result: 'incorrect', type: 'original', team: 'red', quizzerId: 'R1', interruption: expect.objectContaining({ wordIndex: 1 }) }),
     expect.objectContaining({ result: 'nr', type: 'reread', team: 'yellow', quizzerId: undefined }),
   ]);
+  await page.reload();
+  await expect(practice.locator('.log-entry')).toHaveCount(2);
+  expect(await sessions(page)).toEqual([recorded]);
   await practice.getByRole('button', { name: /Library/ }).click();
   await expect(page.getByRole('heading', { name: 'Recent practice' })).toBeVisible();
   await page.reload();
-  await page.getByRole('button', { name: 'Quizzes' }).click();
   practice = await openPublished(page);
   await expect(practice.locator('.log-entry')).toHaveCount(2);
   expect(await sessions(page)).toEqual([recorded]);
@@ -143,7 +145,6 @@ test('keeps missing saved question slots and reports unavailable Scripture', asy
     } finally { db.close(); }
   }, fixture);
   await page.reload();
-  await page.getByRole('button', { name: 'Quizzes' }).click();
   await page.getByRole('button', { name: /Saved shell fixture \(original\)/ }).click();
   const practice = page.getByRole('region', { name: 'Practice quiz' });
   const questions = practice.locator('.practice-question');
