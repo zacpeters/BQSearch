@@ -5,7 +5,12 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', 'VITE_');
   const quizPrecache = env.VITE_ENABLE_QUIZZES === 'true'
-    ? { workbox: { globPatterns: ['**/*.{js,css,html}', 'assets/bqquiz-2027-*.json'] } }
+    ? {
+      strategies: 'injectManifest' as const,
+      srcDir: 'pwa',
+      filename: 'sw.js',
+      injectManifest: { globPatterns: ['**/*.{js,css,html}', 'assets/bqquiz-2027-*.json'] },
+    }
     : {};
 
   return {
